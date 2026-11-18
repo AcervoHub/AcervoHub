@@ -1,0 +1,6 @@
+{
+  "name": "bookspace-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aplicação frontend do Bookspace."
+}

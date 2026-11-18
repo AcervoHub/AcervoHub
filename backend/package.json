@@ -1,0 +1,6 @@
+{
+  "name": "bookspace-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API backend do Bookspace."
+}
