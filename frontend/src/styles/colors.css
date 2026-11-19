@@ -1,0 +1,94 @@
+:root {
+  /* Paleta principal */
+  --texto-principal: #1E2B24;
+  --texto-secundario: #68736B;
+  --marca-principal: #264F3D;
+  --marca-principal-hover: #1B3D2E;
+  --fundo-pagina: #F6F4ED;
+  --fundo-papel: #FCFBF7;
+  --borda-linha: #E5E2D8;
+  --verde-salvia: #DCE6D6;
+  --argila-clara: #EAD9CE;
+  --areia: #EEE5CE;
+
+  /* Fundos e superfícies */
+  --superficie-sidebar: #F9F8F3;
+  --superficie-sidebar-hover: #F0F1EA;
+  --superficie-salvia-claro: #E4EADF;
+  --superficie-bege-suave: #F4F2EC;
+  --superficie-bege-alt: #F4F2EB;
+  --superficie-cinza-salvia: #E4E8E1;
+  --superficie-branco-esverdeado: #F8F8F4;
+  --superficie-cinza-creme: #F1F1EB;
+  --superficie-perfil-salvia: #E6EADF;
+  --superficie-papel-quente: #FBFAF7;
+  --anel-foco: #EDF1EB;
+  --anel-selecao: #E8EEE7;
+  --previa-marfim-claro: #FAF9F4;
+  --previa-creme-claro: #F7F5EF;
+  --branco: #FFFFFF;
+
+  /* Textos, ícones e bordas secundárias */
+  --texto-cinza-floresta: #667169;
+  --texto-salvia-suave: #79837C;
+  --texto-oliva-suave: #5D675F;
+  --texto-categoria: #7C857E;
+  --icone-busca: #879087;
+  --icone-mobile-inativo: #858D87;
+  --texto-floresta-escuro: #455149;
+  --borda-botao-secundario: #BDC8C0;
+  --borda-vazio-tracejado: #CFD3CA;
+  --borda-botao-perfil: #CCD3CD;
+  --borda-foco-salvia: #91A397;
+  --borda-tema-selecionado: #809688;
+  --borda-previa-tema: #DDDCD5;
+  --controle-toggle-desligado: #D6D9D4;
+  --divisoria-card: #EEECE6;
+  --grade-grafico: #EEECE5;
+
+  /* Dashboard e visualização de dados */
+  --grafico-barra-verde: #8EA387;
+  --genero-1-verde: #6F8A70;
+  --genero-2-terracota: #B8826E;
+  --genero-3-mostarda: #B5A06B;
+  --genero-4-azul-acinzentado: #6E8390;
+  --genero-5-malva: #95738A;
+  --insight-dourado-claro: #F0DDAD;
+  --insight-salvia-claro: #BDC9C1;
+  --insight-texto-apoio: #D1D9D4;
+  --estrela-avaliacao: #9A7440;
+
+  /* Ações destrutivas e alertas */
+  --perigo-remover-icone: #9A6C64;
+  --perigo-remover-hover: #F4E8E4;
+  --perigo-excluir-texto: #955A50;
+  --perigo-excluir-borda: #D8B9B3;
+  --perigo-excluir-fundo: #FFF8F6;
+
+  /* Avatares ilustrativos da comunidade */
+  --avatar-marina: #DFE8D3;
+  --avatar-rafael: #ECD8CF;
+  --avatar-clara: #D8E1E8;
+  --avatar-joao: #EADFC8;
+
+  /* Prévia do tema "Sistema" */
+  --previa-sistema-noite: #33493E;
+  --previa-sistema-lua: #D8DFDB;
+  --previa-sistema-faixa-clara: #E2E8DE;
+
+  /* Transparências */
+  --alfa-icone-metrica-fundo: rgba(255, 255, 255, 0.48);
+  --alfa-botao-salvar-fundo: rgba(252, 251, 247, 0.93);
+  --alfa-borda-avatar: rgba(255, 255, 255, 0.60);
+  --alfa-circulo-insight: rgba(255, 255, 255, 0.10);
+  --alfa-nav-mobile: rgba(252, 251, 247, 0.96);
+  --alfa-fundo-escuro-mobile: rgba(20, 31, 25, 0.36);
+
+  /* Sombras */
+  --sombra-xs: rgba(30, 43, 36, 0.08);
+  --sombra-sm: rgba(38, 79, 61, 0.12);
+  --sombra-md-alt: rgba(42, 48, 43, 0.15);
+  --sombra-md: rgba(20, 30, 25, 0.15);
+  --sombra-lg: rgba(25, 35, 29, 0.18);
+  --sombra-xl: rgba(20, 35, 28, 0.22);
+}
