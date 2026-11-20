@@ -8,9 +8,9 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User.ts'
-export type * from './models/Book.ts'
-export type * from './models/UserBook.ts'
-export type * from './models/Favorite.ts'
-export type * from './models/Review.ts'
-export type * from './commonInputTypes.ts'
+export type * from './models/User.js'
+export type * from './models/Book.js'
+export type * from './models/UserBook.js'
+export type * from './models/Favorite.js'
+export type * from './models/Review.js'
+export type * from './commonInputTypes.js'
