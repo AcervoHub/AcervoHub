@@ -1,0 +1,18 @@
+# Pacotes baixados
+node_modules
+
+# Segredos: NUNCA enviar ao GitHub
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Resultado de build
+dist
+
+# Restos do sistema
+.DS_Store
