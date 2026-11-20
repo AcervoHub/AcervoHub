@@ -1,0 +1,254 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.loginContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--fundo-pagina);
+}
+
+.catalogo {
+  background-color: var(--marca-principal);
+  width: 700px;
+}
+
+.iconeTitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 45px;
+}
+
+.iconeBook {
+  background-color: white;
+  border-radius: 50%;
+  padding: 8px;
+  color: var(--marca-principal-hover);
+  width: 40px;
+  height: 40px;
+  margin-left: 65px;
+  flex-shrink: 0;
+}
+
+.titulo {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--marca-principal-hover);
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.conteudoCatalogo {
+  color: white;
+  margin-left: 60px;
+  margin-top: 73px;
+}
+
+.conteudoCatalogo2 {
+  color: var(--texto-secundario);
+  margin-left: 60px;
+  margin-top: 50px;
+}
+
+.text {
+  font-weight: bold;
+  width: 400px;
+  font-size: 3.2em;
+  text-align: start;
+}
+
+.subText {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: var(--texto-secundario);
+}
+
+.subText2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9em;
+  margin-top: 20px;
+  color: var(--texto-secundario);
+  font-weight: 500;
+  width: 450px;
+}
+
+.divisor {
+  border: none;
+  border-top: 1px solid var(--texto-secundario);
+  margin-top: 60px;
+  margin-left: 60px;
+  width: 550px;
+}
+
+.epigrafe {
+  font-size: 1.1em;
+  width: 450px;
+}
+
+.ladoDireito {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  gap: 8px;
+}
+
+.ladoDireito h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--texto-principal);
+  line-height: 1.2;
+}
+
+.subtituloTopo {
+  color: var(--texto-secundario);
+  font-size: 0.9em;
+  margin-top: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+}
+
+.subtituloTopo2 {
+  color: var(--texto-secundario);
+  font-size: 0.9em;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.abasAuth {
+  display: flex;
+  align-items: center;
+  background-color: var(--superficie-sidebar-hover);
+  padding: 4px;
+  border-radius: 10px;
+  margin-top: 18px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.aba {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aba:hover {
+  color: var(--texto-principal);
+}
+
+.aba.ativa {
+  background-color: var(--fundo-papel);
+  color: var(--texto-principal);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.formAuth {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.formAuth label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-principal);
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.formAuth label:first-child {
+  margin-top: 0;
+}
+
+.formAuth input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--borda-linha);
+  border-radius: 8px;
+  background-color: var(--fundo-papel);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  color: var(--texto-principal);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formAuth input::placeholder {
+  color: var(--texto-secundario);
+  opacity: 0.75;
+}
+
+.formAuth input:focus {
+  border-color: var(--marca-principal);
+  box-shadow: 0 0 0 3px rgba(34, 72, 52, 0.12);
+}
+
+.btnPrincipal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--marca-principal);
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btnPrincipal:hover {
+  background-color: var(--marca-principal-hover);
+}
+
+.trocaModo {
+  margin-top: 18px;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.88rem;
+  color: var(--texto-secundario);
+}
+
+.trocaModo button {
+  border: none;
+  background: transparent;
+  color: var(--texto-principal);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.trocaModo button:hover {
+  text-decoration: underline;
+  color: var(--marca-principal);
+}
