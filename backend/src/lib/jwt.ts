@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-const generateTokens = (payload: {
-  id: number;
+const generateToken = (payload: {
+  id: string;
   email: string;
   username: string;
 }) => {
@@ -17,4 +17,4 @@ const verifyToken = (token: string) => {
   }
 };
 
-export { generateTokens, verifyToken };
+export { generateToken, verifyToken };
