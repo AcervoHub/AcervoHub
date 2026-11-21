@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import "dotenv/config";
 
 // import { PrismaClient } from "../../generated/prisma/client.js";
@@ -12,3 +13,14 @@
 // });
 
 // Apenas quando database estiver pronta, descomentar o código acima e remover o código abaixo
+=======
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../generated/prisma/client.js";
+
+const connectionString = process.env.DATABASE_URL!;
+
+const adapter = new PrismaPg({ connectionString });
+
+export const prisma = new PrismaClient({ adapter });
+>>>>>>> 258106cad25d9992ffce39a186a051b0a60688e5
