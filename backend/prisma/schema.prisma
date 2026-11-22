@@ -21,6 +21,8 @@ model User {
 model Book {
   id            String   @id @default(cuid())
   googleBooksId String   @unique
+  isbn10        String?  @unique
+  isbn13        String?  @unique
   title         String
   authors       String[]
   description   String?
@@ -28,7 +30,6 @@ model Book {
   publishedDate String?
   categories    String[]
   createdAt     DateTime @default(now())
-
   users UserBook[]
 }
 
@@ -36,12 +37,12 @@ model UserBook {
   id      String   @id @default(cuid())
   userId  String
   bookId  String
-  addedAt DateTime @default(now())
-
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   book     Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   favorite Favorite?
   review   Review?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, bookId])
 }
