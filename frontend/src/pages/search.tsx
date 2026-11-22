@@ -13,6 +13,7 @@ import {
   Check,
 } from 'lucide-react';
 import '../styles/search.css';
+import { useNavigate } from 'react-router-dom';
 
 export interface UsuarioPerfil {
   id?: number | string;
