@@ -194,16 +194,17 @@ const searchBooks = async (req: AuthRequest, res: Response) => {
   try {
     const result = await searchGoogleBooks(q, page);
 
-    if (typeof result.results === "undefined" || result.results.length === 0) {
-      return res.json(result);
-    }
-    const conditions = result.results.flatMap(catalogMatchConditions);
-
     if (!req.userId) {
       return res.status(401).json({
         error: "Usuário não autenticado.",
       });
     }
+
+    if (typeof result.results === "undefined" || result.results.length === 0) {
+      return res.json(result);
+    }
+    const conditions = result.results.flatMap(catalogMatchConditions);
+
 
     const existingBooks = await prisma.userBook.findMany({
       where: {
@@ -358,4 +359,82 @@ const addBook = async (req: AuthRequest, res: Response) => {
 } catch (error) {
     return providerError(res, error);
 }}
-export default { searchBooks, addBook };
+
+const getBooks = async (req: AuthRequest, res: Response) => {
+  const page = positiveInteger(req.query.page, 1, 100);
+  const pageSize = positiveInteger(req.query.pageSize, 20, 100);
+
+  const favoriteParam = req.query.isFavorite;
+
+  if (page === null || pageSize === null) {
+    return res.status(400).json({
+      error: 'Paginação inválida.'
+    });
+  }
+
+  if (
+    favoriteParam !== undefined &&
+    typeof favoriteParam !== 'boolean'
+  ) {
+    return res.status(400).json({
+      error: 'O parâmetro isFavorite deve ser true ou false.'
+    });
+  }
+
+  const isFavorite =
+    favoriteParam === 'true'
+      ? true
+      : favoriteParam === 'false'
+        ? false
+        : undefined;
+
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuário não autenticado.'
+    });
+  }
+
+  const key = `user:${userId}:books:${isFavorite ?? 'all'}:${page}:${pageSize}`;
+
+  try {
+    const result = await cache.getOrLoad(key, 1000, async () => {
+
+      const where = {
+        userId,
+        ...(isFavorite !== undefined ? { isFavorite } : {})
+      };
+
+      const [total, entries] = await Promise.all([
+        prisma.userBook.count({
+          where
+        }),
+
+        prisma.userBook.findMany({
+          where,
+          include: {
+            book: true
+          },
+          skip: (page - 1) * pageSize,
+          take: pageSize
+        })
+      ]);
+
+      return {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+        results: entries
+      };
+    });
+
+    return res.json(result);
+
+  } catch (error) {
+    return providerError(res, error);
+  }
+};
+
+export { searchBooks, addBook, getBooks };
