@@ -16,7 +16,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import '../styles/home.css';
-import { useNavigate } from 'react-router-dom';
+
+export type RotaMenu = 'home' | 'search' | 'dashboard' | 'perfil';
 
 export interface UsuarioPerfil {
   id?: number | string;
@@ -53,6 +54,7 @@ export interface ResumoHome {
 
 export interface HomeProps {
   usuario?: UsuarioPerfil | null;
+  aoNavegar?: (rota: RotaMenu) => void;
   aoSair?: () => void;
   buscarDadosHome?: () => Promise<{
     usuario?: UsuarioPerfil;
@@ -86,6 +88,7 @@ function formatarNota(nota: number | string | null | undefined) {
 
 export function Home({
   usuario: usuarioInicial = null,
+  aoNavegar,
   aoSair,
   buscarDadosHome,
   aoAlternarSalvarCuradoria,
@@ -198,22 +201,42 @@ export function Home({
         </div>
 
         <div id="navegacaoPrincipal" className="buttons">
-          <button id="btnNavInicio" type="button" className="buttonHome">
+          <button
+            id="btnNavInicio"
+            type="button"
+            className="buttonHome ativo"
+            onClick={() => aoNavegar?.('home')}
+          >
             <House className="icone" />
             <span className="textButtons">Início</span>
           </button>
 
-          <button id="btnNavPesquisar" type="button" className="buttonSearch">
+          <button
+            id="btnNavPesquisar"
+            type="button"
+            className="buttonSearch"
+            onClick={() => aoNavegar?.('search')}
+          >
             <Search className="icone" />
             <span className="textButtons">Pesquisar</span>
           </button>
 
-          <button id="btnNavDashboard" type="button" className="buttonDashboard">
+          <button
+            id="btnNavDashboard"
+            type="button"
+            className="buttonDashboard"
+            onClick={() => aoNavegar?.('dashboard')}
+          >
             <BarChart3 className="icone" />
             <span className="textButtons">Dashboard</span>
           </button>
 
-          <button id="btnNavPerfil" type="button" className="buttonUser">
+          <button
+            id="btnNavPerfil"
+            type="button"
+            className="buttonUser"
+            onClick={() => aoNavegar?.('perfil')}
+          >
             <User className="icone" />
             <span className="textButtons">Meu perfil</span>
           </button>
@@ -222,7 +245,12 @@ export function Home({
         <hr className="divisor" />
 
         <div id="areaPerfilUsuario" className="perfilArea">
-          <button id="btnCardPerfil" type="button" className="perfilCard">
+          <button
+            id="btnCardPerfil"
+            type="button"
+            className="perfilCard"
+            onClick={() => aoNavegar?.('perfil')}
+          >
             <div className="avatar">
               {usuario?.fotoUrl ? (
                 <img
@@ -268,7 +296,12 @@ export function Home({
           </div>
 
           <div className="headerButton">
-            <button id="btnEncontrarLivro" type="button" className="buttonSearchHeader">
+            <button
+              id="btnEncontrarLivro"
+              type="button"
+              className="buttonSearchHeader"
+              onClick={() => aoNavegar?.('search')}
+            >
               <Search className="iconeHeader" />
               <span className="textButtonsHeader">Encontrar um livro</span>
             </button>
@@ -329,7 +362,12 @@ export function Home({
               <h2 className="tituloSecao">Livros para conhecer</h2>
             </div>
 
-            <button id="btnVerTodosCuradoria" type="button" className="btnVerTodos">
+            <button
+              id="btnVerTodosCuradoria"
+              type="button"
+              className="btnVerTodos"
+              onClick={() => aoNavegar?.('search')}
+            >
               <span>Ver todos</span>
               <ChevronRight size={16} />
             </button>

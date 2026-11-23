@@ -86,7 +86,8 @@
   background-color: var(--superficie-sidebar-hover);
 }
 
-.avatar {
+.avatar,
+.avatarHeader {
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -173,7 +174,8 @@
 .buttonSearch:hover,
 .buttonDashboard:hover,
 .buttonUser:hover,
-.buttonExit:hover {
+.buttonExit:hover,
+.buttonUser.ativo {
   color: var(--marca-principal-hover);
   background-color: var(--superficie-sidebar-hover);
 }
@@ -190,4 +192,189 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 1;
+}
+
+.conteudo {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 40px 60px 80px;
+}
+
+.infoUsuario {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: var(--fundo-card-lidos);
+  padding: 25px 15px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.avatarHeader {
+  width: 60px;
+  height: 60px;
+  background-color: var(--marca-principal);
+  color: white;
+  font-size: 1.3em;
+  margin-left: 15px;
+}
+
+.infoEscrita {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.subTextHeader {
+  color: var(--texto-secundario);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.perfilNomeHeader {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 2.2em;
+}
+
+.infoEscrita .perfilNome {
+  font-size: 2.2em;
+}
+
+.perfilHandle {
+  color: var(--texto-secundario);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.infoEscrita .perfilHandle {
+  font-size: 0.95rem;
+}
+
+.infoHeaderLidosLer {
+  display: flex;
+  gap: 25px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: auto;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.headerLido,
+.headerLer {
+  color: var(--texto-secundario);
+  font-weight: 500;
+}
+
+.main {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.article {
+  background-color: var(--fundo-papel);
+  border: 1px solid var(--borda-linha);
+  border-radius: 12px;
+  width: 60%;
+  padding: 24px 28px;
+}
+
+.tituloArticle {
+  font-size: 2em;
+  margin-top: 10px;
+  margin-bottom: 22px;
+  color: var(--texto-principal);
+}
+
+.formPerfil {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.campoForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campoForm label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--texto-principal);
+}
+
+.campoForm input,
+.campoForm textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--borda-linha);
+  border-radius: 8px;
+  background-color: var(--fundo-pagina);
+  color: var(--texto-principal);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.campoForm input:focus,
+.campoForm textarea:focus {
+  border-color: var(--marca-principal);
+}
+
+.campoForm textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.btnSalvarPerfil {
+  align-self: flex-start;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--marca-principal);
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btnSalvarPerfil:hover:not(:disabled) {
+  background-color: var(--marca-principal-hover);
+}
+
+.btnSalvarPerfil:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.section {
+  display: flex;
+  gap: 10px;
+  background-color: var(--fundo-papel);
+  border: 1px solid var(--borda-linha);
+  border-radius: 12px;
+  width: 60%;
+  padding: 24px 28px;
+  height: 140px;
+}
+
+.subTextSection {
+  font-weight: 600;
+  color: var(--texto-secundario);
+  font-size: 1.2em;
+  margin-top: 15px;
 }

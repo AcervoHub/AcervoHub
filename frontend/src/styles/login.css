@@ -13,6 +13,11 @@
 .catalogo {
   background-color: var(--marca-principal);
   width: 700px;
+  height: 100vh;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .catalogo .iconeTitulo {
@@ -53,6 +58,7 @@
   color: var(--texto-secundario);
   margin-left: 60px;
   margin-top: 50px;
+  padding-bottom: 40px;
 }
 
 .text {
@@ -101,7 +107,7 @@
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.5rem;
   gap: 8px;
 }
 
@@ -183,7 +189,8 @@
   margin-top: 0;
 }
 
-.formAuth input {
+.formAuth input,
+.formAuth textarea {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid var(--borda-linha);
@@ -196,12 +203,20 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.formAuth input::placeholder {
+.formAuth textarea {
+  resize: vertical;
+  min-height: 86px;
+  line-height: 1.4;
+}
+
+.formAuth input::placeholder,
+.formAuth textarea::placeholder {
   color: var(--texto-secundario);
   opacity: 0.75;
 }
 
-.formAuth input:focus {
+.formAuth input:focus,
+.formAuth textarea:focus {
   border-color: var(--marca-principal);
   box-shadow: 0 0 0 3px rgba(34, 72, 52, 0.12);
 }
@@ -225,8 +240,13 @@
   transition: background-color 0.2s ease;
 }
 
-.btnPrincipal:hover {
+.btnPrincipal:hover:not(:disabled) {
   background-color: var(--marca-principal-hover);
+}
+
+.btnPrincipal:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .trocaModo {

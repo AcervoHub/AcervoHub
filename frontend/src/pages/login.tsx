@@ -11,6 +11,7 @@ export interface DadosCadastro {
   nome: string;
   email: string;
   senha: string;
+  bio?: string;
 }
 
 export interface RespostaAutenticacao {
@@ -19,6 +20,7 @@ export interface RespostaAutenticacao {
     nome: string;
     arroba?: string;
     email?: string;
+    bio?: string;
     fotoUrl?: string | null;
   };
   token?: string;
@@ -43,6 +45,7 @@ export function Login({
   const [senhaLogin, setSenhaLogin] = useState('');
   const [emailCadastro, setEmailCadastro] = useState('');
   const [senhaCadastro, setSenhaCadastro] = useState('');
+  const [bioCadastro, setBioCadastro] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -86,13 +89,23 @@ export function Login({
 
     setEnviando(true);
     try {
+      const bioLimpa = bioCadastro.trim();
       const payload: DadosCadastro = {
         nome: nomeCadastro.trim(),
         email: emailCadastro.trim(),
         senha: senhaCadastro,
+        bio: bioLimpa || undefined,
       };
       const resposta = aoEnviarCadastro ? await aoEnviarCadastro(payload) : undefined;
-      aoEntrar?.(resposta || { usuario: { nome: payload.nome } });
+      aoEntrar?.(
+        resposta || {
+          usuario: {
+            nome: payload.nome,
+            email: payload.email,
+            bio: bioLimpa || undefined,
+          },
+        }
+      );
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Não foi possível criar a conta.');
     } finally {
@@ -227,6 +240,16 @@ export function Login({
               placeholder="Crie uma senha"
               value={senhaCadastro}
               onChange={(e) => setSenhaCadastro(e.target.value)}
+              disabled={enviando}
+            />
+
+            <label htmlFor="inputBioCadastro">Sua bio</label>
+            <textarea
+              id="inputBioCadastro"
+              rows={3}
+              placeholder="Conte um pouco sobre suas leituras..."
+              value={bioCadastro}
+              onChange={(e) => setBioCadastro(e.target.value)}
               disabled={enviando}
             />
 
