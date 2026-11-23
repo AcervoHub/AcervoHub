@@ -89,6 +89,8 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const BookScalarFieldEnum = {
   id: 'id',
   googleBooksId: 'googleBooksId',
+  isbn10: 'isbn10',
+  isbn13: 'isbn13',
   title: 'title',
   authors: 'authors',
   description: 'description',
@@ -105,7 +107,8 @@ export const UserBookScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   bookId: 'bookId',
-  addedAt: 'addedAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserBookScalarFieldEnum = (typeof UserBookScalarFieldEnum)[keyof typeof UserBookScalarFieldEnum]

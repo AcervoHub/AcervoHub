@@ -28,21 +28,24 @@ export type UserBookMinAggregateOutputType = {
   id: string | null
   userId: string | null
   bookId: string | null
-  addedAt: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type UserBookMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   bookId: string | null
-  addedAt: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type UserBookCountAggregateOutputType = {
   id: number
   userId: number
   bookId: number
-  addedAt: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -51,21 +54,24 @@ export type UserBookMinAggregateInputType = {
   id?: true
   userId?: true
   bookId?: true
-  addedAt?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type UserBookMaxAggregateInputType = {
   id?: true
   userId?: true
   bookId?: true
-  addedAt?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type UserBookCountAggregateInputType = {
   id?: true
   userId?: true
   bookId?: true
-  addedAt?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -145,7 +151,8 @@ export type UserBookGroupByOutputType = {
   id: string
   userId: string
   bookId: string
-  addedAt: Date
+  createdAt: Date
+  updatedAt: Date
   _count: UserBookCountAggregateOutputType | null
   _min: UserBookMinAggregateOutputType | null
   _max: UserBookMaxAggregateOutputType | null
@@ -173,7 +180,8 @@ export type UserBookWhereInput = {
   id?: Prisma.StringFilter<"UserBook"> | string
   userId?: Prisma.StringFilter<"UserBook"> | string
   bookId?: Prisma.StringFilter<"UserBook"> | string
-  addedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   book?: Prisma.XOR<Prisma.BookScalarRelationFilter, Prisma.BookWhereInput>
   favorite?: Prisma.XOR<Prisma.FavoriteNullableScalarRelationFilter, Prisma.FavoriteWhereInput> | null
@@ -184,7 +192,8 @@ export type UserBookOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   bookId?: Prisma.SortOrder
-  addedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   book?: Prisma.BookOrderByWithRelationInput
   favorite?: Prisma.FavoriteOrderByWithRelationInput
@@ -199,7 +208,8 @@ export type UserBookWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserBookWhereInput | Prisma.UserBookWhereInput[]
   userId?: Prisma.StringFilter<"UserBook"> | string
   bookId?: Prisma.StringFilter<"UserBook"> | string
-  addedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   book?: Prisma.XOR<Prisma.BookScalarRelationFilter, Prisma.BookWhereInput>
   favorite?: Prisma.XOR<Prisma.FavoriteNullableScalarRelationFilter, Prisma.FavoriteWhereInput> | null
@@ -210,7 +220,8 @@ export type UserBookOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   bookId?: Prisma.SortOrder
-  addedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserBookCountOrderByAggregateInput
   _max?: Prisma.UserBookMaxOrderByAggregateInput
   _min?: Prisma.UserBookMinOrderByAggregateInput
@@ -223,12 +234,14 @@ export type UserBookScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"UserBook"> | string
   userId?: Prisma.StringWithAggregatesFilter<"UserBook"> | string
   bookId?: Prisma.StringWithAggregatesFilter<"UserBook"> | string
-  addedAt?: Prisma.DateTimeWithAggregatesFilter<"UserBook"> | Date | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserBook"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserBook"> | Date | string
 }
 
 export type UserBookCreateInput = {
   id?: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutLibraryInput
   book: Prisma.BookCreateNestedOneWithoutUsersInput
   favorite?: Prisma.FavoriteCreateNestedOneWithoutUserBookInput
@@ -239,14 +252,16 @@ export type UserBookUncheckedCreateInput = {
   id?: string
   userId: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   favorite?: Prisma.FavoriteUncheckedCreateNestedOneWithoutUserBookInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutUserBookInput
 }
 
 export type UserBookUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutLibraryNestedInput
   book?: Prisma.BookUpdateOneRequiredWithoutUsersNestedInput
   favorite?: Prisma.FavoriteUpdateOneWithoutUserBookNestedInput
@@ -257,7 +272,8 @@ export type UserBookUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorite?: Prisma.FavoriteUncheckedUpdateOneWithoutUserBookNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutUserBookNestedInput
 }
@@ -266,19 +282,22 @@ export type UserBookCreateManyInput = {
   id?: string
   userId: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserBookUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserBookUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserBookListRelationFilter = {
@@ -300,21 +319,24 @@ export type UserBookCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   bookId?: Prisma.SortOrder
-  addedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserBookMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   bookId?: Prisma.SortOrder
-  addedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserBookMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   bookId?: Prisma.SortOrder
-  addedAt?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type UserBookScalarRelationFilter = {
@@ -436,7 +458,8 @@ export type UserBookUpdateOneRequiredWithoutReviewNestedInput = {
 
 export type UserBookCreateWithoutUserInput = {
   id?: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   book: Prisma.BookCreateNestedOneWithoutUsersInput
   favorite?: Prisma.FavoriteCreateNestedOneWithoutUserBookInput
   review?: Prisma.ReviewCreateNestedOneWithoutUserBookInput
@@ -445,7 +468,8 @@ export type UserBookCreateWithoutUserInput = {
 export type UserBookUncheckedCreateWithoutUserInput = {
   id?: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   favorite?: Prisma.FavoriteUncheckedCreateNestedOneWithoutUserBookInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutUserBookInput
 }
@@ -483,12 +507,14 @@ export type UserBookScalarWhereInput = {
   id?: Prisma.StringFilter<"UserBook"> | string
   userId?: Prisma.StringFilter<"UserBook"> | string
   bookId?: Prisma.StringFilter<"UserBook"> | string
-  addedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"UserBook"> | Date | string
 }
 
 export type UserBookCreateWithoutBookInput = {
   id?: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutLibraryInput
   favorite?: Prisma.FavoriteCreateNestedOneWithoutUserBookInput
   review?: Prisma.ReviewCreateNestedOneWithoutUserBookInput
@@ -497,7 +523,8 @@ export type UserBookCreateWithoutBookInput = {
 export type UserBookUncheckedCreateWithoutBookInput = {
   id?: string
   userId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   favorite?: Prisma.FavoriteUncheckedCreateNestedOneWithoutUserBookInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutUserBookInput
 }
@@ -530,7 +557,8 @@ export type UserBookUpdateManyWithWhereWithoutBookInput = {
 
 export type UserBookCreateWithoutFavoriteInput = {
   id?: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutLibraryInput
   book: Prisma.BookCreateNestedOneWithoutUsersInput
   review?: Prisma.ReviewCreateNestedOneWithoutUserBookInput
@@ -540,7 +568,8 @@ export type UserBookUncheckedCreateWithoutFavoriteInput = {
   id?: string
   userId: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutUserBookInput
 }
 
@@ -562,7 +591,8 @@ export type UserBookUpdateToOneWithWhereWithoutFavoriteInput = {
 
 export type UserBookUpdateWithoutFavoriteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutLibraryNestedInput
   book?: Prisma.BookUpdateOneRequiredWithoutUsersNestedInput
   review?: Prisma.ReviewUpdateOneWithoutUserBookNestedInput
@@ -572,13 +602,15 @@ export type UserBookUncheckedUpdateWithoutFavoriteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   review?: Prisma.ReviewUncheckedUpdateOneWithoutUserBookNestedInput
 }
 
 export type UserBookCreateWithoutReviewInput = {
   id?: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutLibraryInput
   book: Prisma.BookCreateNestedOneWithoutUsersInput
   favorite?: Prisma.FavoriteCreateNestedOneWithoutUserBookInput
@@ -588,7 +620,8 @@ export type UserBookUncheckedCreateWithoutReviewInput = {
   id?: string
   userId: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   favorite?: Prisma.FavoriteUncheckedCreateNestedOneWithoutUserBookInput
 }
 
@@ -610,7 +643,8 @@ export type UserBookUpdateToOneWithWhereWithoutReviewInput = {
 
 export type UserBookUpdateWithoutReviewInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutLibraryNestedInput
   book?: Prisma.BookUpdateOneRequiredWithoutUsersNestedInput
   favorite?: Prisma.FavoriteUpdateOneWithoutUserBookNestedInput
@@ -620,19 +654,22 @@ export type UserBookUncheckedUpdateWithoutReviewInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorite?: Prisma.FavoriteUncheckedUpdateOneWithoutUserBookNestedInput
 }
 
 export type UserBookCreateManyUserInput = {
   id?: string
   bookId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserBookUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   book?: Prisma.BookUpdateOneRequiredWithoutUsersNestedInput
   favorite?: Prisma.FavoriteUpdateOneWithoutUserBookNestedInput
   review?: Prisma.ReviewUpdateOneWithoutUserBookNestedInput
@@ -641,7 +678,8 @@ export type UserBookUpdateWithoutUserInput = {
 export type UserBookUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorite?: Prisma.FavoriteUncheckedUpdateOneWithoutUserBookNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutUserBookNestedInput
 }
@@ -649,18 +687,21 @@ export type UserBookUncheckedUpdateWithoutUserInput = {
 export type UserBookUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserBookCreateManyBookInput = {
   id?: string
   userId: string
-  addedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type UserBookUpdateWithoutBookInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutLibraryNestedInput
   favorite?: Prisma.FavoriteUpdateOneWithoutUserBookNestedInput
   review?: Prisma.ReviewUpdateOneWithoutUserBookNestedInput
@@ -669,7 +710,8 @@ export type UserBookUpdateWithoutBookInput = {
 export type UserBookUncheckedUpdateWithoutBookInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorite?: Prisma.FavoriteUncheckedUpdateOneWithoutUserBookNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutUserBookNestedInput
 }
@@ -677,7 +719,8 @@ export type UserBookUncheckedUpdateWithoutBookInput = {
 export type UserBookUncheckedUpdateManyWithoutBookInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  addedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -686,7 +729,8 @@ export type UserBookSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   userId?: boolean
   bookId?: boolean
-  addedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   book?: boolean | Prisma.BookDefaultArgs<ExtArgs>
   favorite?: boolean | Prisma.UserBook$favoriteArgs<ExtArgs>
@@ -697,7 +741,8 @@ export type UserBookSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   userId?: boolean
   bookId?: boolean
-  addedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   book?: boolean | Prisma.BookDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBook"]>
@@ -706,7 +751,8 @@ export type UserBookSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   userId?: boolean
   bookId?: boolean
-  addedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   book?: boolean | Prisma.BookDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBook"]>
@@ -715,10 +761,11 @@ export type UserBookSelectScalar = {
   id?: boolean
   userId?: boolean
   bookId?: boolean
-  addedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type UserBookOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "bookId" | "addedAt", ExtArgs["result"]["userBook"]>
+export type UserBookOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "bookId" | "createdAt" | "updatedAt", ExtArgs["result"]["userBook"]>
 export type UserBookInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   book?: boolean | Prisma.BookDefaultArgs<ExtArgs>
@@ -746,7 +793,8 @@ export type $UserBookPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     userId: string
     bookId: string
-    addedAt: Date
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["userBook"]>
   composites: {}
 }
@@ -1177,7 +1225,8 @@ export interface UserBookFieldRefs {
   readonly id: Prisma.FieldRef<"UserBook", 'String'>
   readonly userId: Prisma.FieldRef<"UserBook", 'String'>
   readonly bookId: Prisma.FieldRef<"UserBook", 'String'>
-  readonly addedAt: Prisma.FieldRef<"UserBook", 'DateTime'>
+  readonly createdAt: Prisma.FieldRef<"UserBook", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"UserBook", 'DateTime'>
 }
     
 
