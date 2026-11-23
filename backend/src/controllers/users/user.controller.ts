@@ -3,6 +3,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../../lib/prisma";
 import { generateToken } from "../../lib/jwt";
+import { AuthRequest } from "../../middlewares/auth.middleware";
+
+interface UpdateProfileBody {
+  name?: string;
+  avatarUrl?: string | null;
+}
 
 function sanitizeUserName(value: unknown): string {
   return typeof value === "string"
@@ -47,19 +53,15 @@ const Cadastro = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Informe um e-mail válido." });
     }
     if (password.length < 6 || Buffer.byteLength(password, "utf8") > 72) {
-      return res
-        .status(400)
-        .json({
-          error: "A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.",
-        });
+      return res.status(400).json({
+        error: "A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.",
+      });
     }
     if (!usernameIsValid(username)) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "O username deve ter de 3 a 24 caracteres: letras, números ou _.",
-        });
+      return res.status(400).json({
+        error:
+          "O username deve ter de 3 a 24 caracteres: letras, números ou _.",
+      });
     }
 
     const emailNormalizado = String(email).trim().toLowerCase();
@@ -154,4 +156,108 @@ const Login = async (req: Request, res: Response) => {
   }
 };
 
-export { Cadastro, Login };
+const Me = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    res.status(200).json({ user: usuarioPublico(user) });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+const UpdateUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? (req.body as UpdateProfileBody)
+        : null;
+
+    if (!body) {
+      return res.status(400).json({ error: "Requisição inválida." });
+    }
+
+    const { name, avatarUrl } = body;
+
+    if (name === undefined && avatarUrl === undefined) {
+      return res.status(400).json({ error: "Nenhum campo para atualizar." });
+    }
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length < 2 ||
+      name.trim().length > 80
+    ) {
+      return res
+        .status(400)
+        .json({ error: "O nome deve ter de 2 a 80 caracteres." });
+    }
+
+    if (
+      avatarUrl !== undefined &&
+      avatarUrl !== null &&
+      (typeof avatarUrl !== "string" || avatarUrl.length > 2048)
+    ) {
+      return res.status(400).json({ error: "A URL da foto é inválida" });
+    }
+
+    if (typeof avatarUrl === "string") {
+      try {
+        const url = new URL(avatarUrl);
+        const localDevelopmentUrl = "http://localhost:3000";
+
+        if (url.protocol !== "https:" && !localDevelopmentUrl) {
+          return res
+            .status(400)
+            .json({ error: "A URL da foto deve ser HTTPS." });
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "A URL da foto é inválida" });
+      }
+    }
+
+    const usuarioAnterior = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!usuarioAnterior) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    const usuarioAtualizado = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        avatarUrl: avatarUrl === undefined ? undefined : avatarUrl,
+      },
+    });
+
+    const usuarioPublicoAtualizado = usuarioPublico(usuarioAtualizado);
+
+    res.status(200).json({ user: usuarioPublicoAtualizado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+export { Cadastro, Login, Me, UpdateUser };

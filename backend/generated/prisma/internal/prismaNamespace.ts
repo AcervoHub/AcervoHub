@@ -848,10 +848,15 @@ export const BookScalarFieldEnum = {
   isbn10: 'isbn10',
   isbn13: 'isbn13',
   title: 'title',
+  subtitle: 'subtitle',
   authors: 'authors',
   description: 'description',
+  publisher: 'publisher',
   thumbnail: 'thumbnail',
+  coverUrl: 'coverUrl',
   publishedDate: 'publishedDate',
+  pageCount: 'pageCount',
+  language: 'language',
   categories: 'categories',
   createdAt: 'createdAt'
 } as const
@@ -863,6 +868,9 @@ export const UserBookScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   bookId: 'bookId',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -885,6 +893,7 @@ export const ReviewScalarFieldEnum = {
   userId: 'userId',
   bookId: 'bookId',
   rating: 'rating',
+  comment: 'comment',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -962,6 +971,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
+
+
+/**
+ * Reference to a field of type 'BookReadingStatus'
+ */
+export type EnumBookReadingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookReadingStatus'>
+
+
+
+/**
+ * Reference to a field of type 'BookReadingStatus[]'
+ */
+export type ListEnumBookReadingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookReadingStatus[]'>
+
 
 
 /**
