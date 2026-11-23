@@ -13,7 +13,6 @@ import {
   Check,
 } from 'lucide-react';
 import '../styles/search.css';
-import { useNavigate } from 'react-router-dom';
 
 export interface UsuarioPerfil {
   id?: number | string;
@@ -112,7 +111,16 @@ export function Search({
     );
 
     if (aoAlternarSalvarLivro) {
-      await aoAlternarSalvarLivro(id, proximoValor);
+      try {
+        await aoAlternarSalvarLivro(id, proximoValor);
+      } catch (err) {
+        setResultados((anterior) =>
+          anterior.map((livro) =>
+            livro.id === id ? { ...livro, salvo: !proximoValor } : livro
+          )
+        );
+        setErro(err instanceof Error ? err.message : 'Não foi possível atualizar a estante.');
+      }
     }
   }
 
@@ -129,7 +137,16 @@ export function Search({
     );
 
     if (aoAlternarJaLiLivro) {
-      await aoAlternarJaLiLivro(id, proximoValor);
+      try {
+        await aoAlternarJaLiLivro(id, proximoValor);
+      } catch (err) {
+        setResultados((anterior) =>
+          anterior.map((livro) =>
+            livro.id === id ? { ...livro, jaLi: !proximoValor } : livro
+          )
+        );
+        setErro(err instanceof Error ? err.message : 'Não foi possível atualizar a leitura.');
+      }
     }
   }
 

@@ -12,7 +12,6 @@ import {
   BookHeart,
 } from 'lucide-react';
 import '../styles/dashboard.css';
-import { useNavigate } from 'react-router-dom';
 
 export interface UsuarioPerfil {
   id?: number | string;

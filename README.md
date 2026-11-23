@@ -1,17 +1,21 @@
-# Bookspace
+# Bookspace — AcervoHub
 
-Estrutura inicial proposta para o AcervoHub. Esta organização está em uma branch secundária para avaliação e não altera a branch principal.
+Aplicação web para explorar livros e organizar uma estante pessoal.
 
-## Estrutura
+## Tecnologias atuais
 
-- `frontend/`: aplicação web e seus componentes, páginas, hooks, serviços, contextos e estilos.
-- `backend/`: API, organização por camadas e pasta destinada ao Prisma.
-- `docs/`: documentação inicial de requisitos, API, banco de dados e testes.
+- Frontend: React, TypeScript e Vite.
+- Backend: Express, TypeScript, Prisma e PostgreSQL.
+- Catálogo: Google Books API.
 
-As tecnologias e os contratos da aplicação ainda serão definidos. Os arquivos `package.json` são apenas pontos de partida e não incluem dependências.
+## Executar localmente
 
-## Próximos passos
+1. Configure o backend conforme [`backend/README.md`](backend/README.md) e inicie-o na porta `3000`.
+2. Copie `frontend/.env.example` para `frontend/.env` se precisar alterar a URL da API.
+3. Em `frontend/`, instale as dependências com `npm install` e execute `npm run dev`.
 
-1. Definir stack, ferramentas e scripts do frontend e backend.
-2. Detalhar requisitos, endpoints e modelo de dados com a equipe.
-3. Implementar funcionalidades e registrar os testes correspondentes.
+## Estado da integração
+
+Cadastro, login, busca no catálogo, favoritos, marcação de livros lidos, estante e resumos de leitura usam as rotas atuais do backend. O backend ainda não oferece persistência para editar perfil, bio ou remover livros.
+
+Consulte [`docs/rotas-api.md`](docs/rotas-api.md) para os contratos e limitações atuais.
