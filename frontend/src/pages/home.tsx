@@ -1,5 +1,6 @@
 import { House, Search, BookOpen, BarChart3, User, LogOut, ChevronRight } from 'lucide-react';
 import '../styles/home.css';
+import type { UsuarioSessao } from '../services/api';
 
 interface UsuarioPerfil {
   nome: string;
@@ -13,13 +14,36 @@ function pegarIniciais(nome: string) {
   return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
 }
 
-export function Home() {
+interface HomeProps {
+  usuario?: UsuarioSessao;
+  aoAtualizarPerfil?: (nome: string) => Promise<void>;
+  aoSair?: () => void;
+}
 
-  const usuario: UsuarioPerfil = {
+const usuarioPadrao: UsuarioPerfil = {
     nome: 'Ana Oliveira',
     arroba: '@anaentrelinhas',
     fotoUrl: null,
   };
+
+function obterPrimeiroNome(nome: string) {
+  return nome.trim().split(/\s+/)[0] || 'Leitor';
+}
+
+export function Home({ usuario: usuarioAtual, aoAtualizarPerfil, aoSair }: HomeProps) {
+  const usuario = usuarioAtual ?? usuarioPadrao;
+
+  async function handleEditarPerfil() {
+    if (!aoAtualizarPerfil) return;
+    const nome = window.prompt('Atualizar nome do perfil:', usuario.nome);
+    if (nome === null || !nome.trim()) return;
+
+    try {
+      await aoAtualizarPerfil(nome.trim());
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.');
+    }
+  }
 
   return (
     <div className="container">
@@ -45,7 +69,7 @@ export function Home() {
             <span className="textButtons">Dashboard</span>
           </button>
 
-          <button type="button" className="buttonUser">
+          <button type="button" className="buttonUser" onClick={handleEditarPerfil}>
             <User className="icone" />
             <span className="textButtons">Meu perfil</span>
           </button>
@@ -54,7 +78,7 @@ export function Home() {
         <hr className="divisor" />
 
         <div className="perfilArea">
-          <button type="button" className="perfilCard">
+          <button type="button" className="perfilCard" onClick={handleEditarPerfil}>
             <div className="avatar">
               {usuario.fotoUrl ? (
                 <img
@@ -77,7 +101,7 @@ export function Home() {
         </div>
 
         <div className="buttonsSecondary">
-          <button type="button" className="buttonExit">
+          <button type="button" className="buttonExit" onClick={aoSair}>
             <LogOut className="icone" />
             <span className="textButtons">Sair</span>
           </button>
@@ -90,7 +114,7 @@ export function Home() {
           <div className='TextHeader'>
 
             <p className='subTituloHeader'>SUA BIBLIOTECA PESSOAL</p>
-            <h1 className='tituloHeader'>Olá, Ana.</h1>
+            <h1 className='tituloHeader'>Olá, {obterPrimeiroNome(usuario.nome)}.</h1>
             <p className='subTituloHeader2'>Que história vamos descobrir hoje?</p>
 
           </div>

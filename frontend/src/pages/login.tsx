@@ -1,10 +1,38 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import '../styles/login.css';
-import { BookOpen, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { BookOpen, ArrowRight } from 'lucide-react';
 
-export function Login() {
+interface LoginProps {
+    aoEntrar: (email: string, senha: string) => Promise<void>;
+    aoCadastrar: (nome: string, email: string, senha: string) => Promise<void>;
+}
+
+export function Login({ aoEntrar, aoCadastrar }: LoginProps) {
 
     const [modo, setModo] = useState<'login' | 'cadastro'>('login');
+    const [nomeCadastro, setNomeCadastro] = useState('');
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [erro, setErro] = useState<string | null>(null);
+    const [enviando, setEnviando] = useState(false);
+
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        setErro(null);
+        setEnviando(true);
+
+        try {
+            if (modo === 'login') {
+                await aoEntrar(email.trim(), senha);
+            } else {
+                await aoCadastrar(nomeCadastro.trim(), email.trim(), senha);
+            }
+        } catch (error) {
+            setErro(error instanceof Error ? error.message : 'Não foi possível entrar.');
+        } finally {
+            setEnviando(false);
+        }
+    }
 
     return (
         <div className="loginContainer">
@@ -47,6 +75,8 @@ export function Login() {
                     {modo === 'login' ? 'Acesse sua conta e continue sua jornada.' : 'Cadastre-se e comece a organizar suas leituras.'}
                 </p>
 
+                {erro && <p className='subtituloTopo2'>{erro}</p>}
+
                 <div className='abasAuth'>
 
                     <button
@@ -67,30 +97,30 @@ export function Login() {
 
                 {/* Formulário condicional */}
                 {modo === 'login' ? (
-                    <form className="formAuth">
+                    <form className="formAuth" onSubmit={handleSubmit}>
                         <label>E-mail</label>
-                        <input type="email" placeholder="voce@exemplo.com" />
+                        <input type="email" placeholder="voce@exemplo.com" value={email} onChange={(event) => setEmail(event.target.value)} required disabled={enviando} />
 
                         <label>Senha</label>
-                        <input type="password" placeholder="Digite sua senha" />
+                        <input type="password" placeholder="Digite sua senha" value={senha} onChange={(event) => setSenha(event.target.value)} required disabled={enviando} />
 
-                        <button type="submit" className="btnPrincipal">
-                            Entrar na biblioteca <ArrowRight size={18} />
+                        <button type="submit" className="btnPrincipal" disabled={enviando}>
+                            {enviando ? 'Entrando...' : 'Entrar na biblioteca'} <ArrowRight size={18} />
                         </button>
                     </form>
                 ) : (
-                    <form className="formAuth">
+                    <form className="formAuth" onSubmit={handleSubmit}>
                         <label>Nome completo</label>
-                        <input type="text" placeholder="Seu nome" />
+                        <input type="text" placeholder="Seu nome" value={nomeCadastro} onChange={(event) => setNomeCadastro(event.target.value)} required disabled={enviando} />
 
                         <label>E-mail</label>
-                        <input type="email" placeholder="voce@exemplo.com" />
+                        <input type="email" placeholder="voce@exemplo.com" value={email} onChange={(event) => setEmail(event.target.value)} required disabled={enviando} />
 
                         <label>Senha</label>
-                        <input type="password" placeholder="Crie uma senha" />
+                        <input type="password" placeholder="Crie uma senha" value={senha} onChange={(event) => setSenha(event.target.value)} required disabled={enviando} />
 
-                        <button type="submit" className="btnPrincipal">
-                            Criar minha conta <ArrowRight size={18} />
+                        <button type="submit" className="btnPrincipal" disabled={enviando}>
+                            {enviando ? 'Criando conta...' : 'Criar minha conta'} <ArrowRight size={18} />
                         </button>
                     </form>
                 )}
