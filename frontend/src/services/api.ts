@@ -2,61 +2,78 @@ const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3000/api").re
 const TOKEN_KEY = "acervohub.auth.token";
 const USER_KEY = "acervohub.auth.user";
 
-interface UsuarioApi {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string | null;
-}
-
-export interface UsuarioSessao {
+export interface UsuarioApi {
   id: string;
   nome: string;
   email: string;
   arroba: string;
   fotoUrl: string | null;
+  bio?: string;
 }
 
-interface ErroApi {
+export interface LivroCatalogoApi {
+  googleBooksId: string;
+  title: string;
+  authors: string[];
+  categories: string[];
+  coverUrl: string | null;
+  inLibrary: boolean;
+}
+
+export interface LivroEstanteApi {
+  id: string;
+  userId: string;
+  bookId: string;
+  isFavorite: boolean;
+  rating: number | null;
+  comment: string | null;
+  startedAt: string | null;
+  finishedAt: string | null;
+  book: {
+    googleBooksId: string;
+    title: string;
+    authors: string[];
+    categories: string[];
+    coverUrl: string | null;
+    pageCount: number | null;
+  };
+}
+
+interface RespostaApi<T> {
+  data: T;
+}
+
+interface RespostaErro {
   error?: string;
   message?: string;
 }
 
-export interface ResumoEstanteApi {
-  total: number;
-  totalPages: number;
-  resultados: Array<{
-    status: "queroLer" | "lidos";
-    book: { pageCount: number | null };
-  }>;
-}
-
-function obterToken() {
+function tokenAtual() {
   return sessionStorage.getItem(TOKEN_KEY);
 }
 
 export function temSessao() {
-  return Boolean(obterToken());
+  return Boolean(tokenAtual());
 }
 
-function salvarSessao(usuario: UsuarioSessao, token: string) {
-  sessionStorage.setItem(TOKEN_KEY, token);
-  sessionStorage.setItem(USER_KEY, JSON.stringify(usuario));
-}
-
-export function obterUsuarioSalvo(): UsuarioSessao | null {
+export function obterUsuarioSalvo(): UsuarioApi | null {
   const salvo = sessionStorage.getItem(USER_KEY);
   if (!salvo) return null;
 
   try {
-    return JSON.parse(salvo) as UsuarioSessao;
+    return JSON.parse(salvo) as UsuarioApi;
   } catch {
     sessionStorage.removeItem(USER_KEY);
     return null;
   }
 }
 
-export function limparSessao() {
+function salvarSessao(usuario: UsuarioApi, token: string) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(USER_KEY, JSON.stringify(usuario));
+}
+
+export function encerrarSessaoApi() {
   sessionStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(USER_KEY);
 }
@@ -67,30 +84,32 @@ async function requisicao<T>(path: string, init: RequestInit = {}): Promise<T> {
     headers.set("Content-Type", "application/json");
   }
 
-  const token = obterToken();
+  const token = tokenAtual();
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   let response: Response;
   try {
     response = await fetch(`${API_URL}${path}`, { ...init, headers });
   } catch {
-    throw new Error("Não foi possível conectar ao backend. Confira se a API está iniciada.");
+    throw new Error("Não foi possível conectar à API. Verifique se o backend está iniciado.");
   }
 
-  const payload = (await response.json().catch(() => ({}))) as T & ErroApi;
+  const payload = (await response.json().catch(() => ({}))) as T & RespostaErro;
   if (!response.ok) {
-    throw new Error(payload.error || payload.message || "Não foi possível concluir a solicitação.");
+    if (response.status === 401) encerrarSessaoApi();
+    throw new Error(payload.error || payload.message || "A solicitação não pôde ser concluída.");
   }
   return payload;
 }
 
-function mapearUsuario(usuario: UsuarioApi): UsuarioSessao {
+function mapearUsuario(user: { id: string; name: string; email: string; avatarUrl?: string | null; bio?: string | null }): UsuarioApi {
   return {
-    id: usuario.id,
-    nome: usuario.name,
-    email: usuario.email,
-    arroba: `@${usuario.name}`,
-    fotoUrl: usuario.avatarUrl ?? null,
+    id: user.id,
+    nome: user.name,
+    email: user.email,
+    arroba: `@${user.name}`,
+    fotoUrl: user.avatarUrl ?? null,
+    bio: user.bio ?? undefined,
   };
 }
 
@@ -106,60 +125,77 @@ function gerarUsername(nome: string) {
   return username.length >= 3 ? username : `leitor_${username}`.slice(0, 24);
 }
 
-export async function fazerLogin(email: string, password: string) {
+export async function fazerLogin(email: string, senha: string) {
   const resposta = await requisicao<{
-    user: UsuarioApi;
+    user: { id: string; name: string; email: string; avatarUrl?: string | null };
     token: string;
   }>("/users/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: senha }),
   });
-
   const usuario = mapearUsuario(resposta.user);
   salvarSessao(usuario, resposta.token);
   return usuario;
 }
 
-export async function fazerCadastro(nome: string, email: string, password: string) {
-  await requisicao("/users/cadastro", {
+export async function fazerCadastro(nome: string, email: string, senha: string) {
+  const resposta = await requisicao<{
+    user: { id: string; name: string; email: string; avatarUrl?: string | null };
+    token?: string;
+  }>("/users/cadastro", {
     method: "POST",
-    body: JSON.stringify({ username: gerarUsername(nome), email, password }),
+    body: JSON.stringify({ username: gerarUsername(nome), email, password: senha }),
   });
 
-  // O endpoint de cadastro ainda não retorna token; autentica em seguida.
-  return fazerLogin(email, password);
+  // Login é o fallback para servidores que ainda não retornam o token no cadastro.
+  if (!resposta.token) return fazerLogin(email, senha);
+  const usuario = mapearUsuario(resposta.user);
+  const usuarioAutenticado = { ...usuario, nome: nome.trim() };
+  salvarSessao(usuarioAutenticado, resposta.token);
+  return usuarioAutenticado;
 }
 
 export async function buscarMeuPerfil() {
-  const resposta = await requisicao<{ user: UsuarioApi }>("/users/me");
+  const resposta = await requisicao<{
+    user: { id: string; name: string; email: string; avatarUrl?: string | null };
+  }>("/users/me");
   const usuario = mapearUsuario(resposta.user);
-  const token = obterToken();
+  const token = tokenAtual();
   if (token) salvarSessao(usuario, token);
   return usuario;
 }
 
-export async function atualizarMeuPerfil(name: string) {
-  const resposta = await requisicao<{ user: UsuarioApi }>("/users/update", {
+export async function atualizarMeuPerfil(dados: { name: string; bio: string }) {
+  const resposta = await requisicao<{
+    user: { id: string; name: string; email: string; avatarUrl?: string | null; bio: string };
+  }>("/users/update", {
     method: "PUT",
-    body: JSON.stringify({ name }),
+    body: JSON.stringify(dados),
   });
   const usuario = mapearUsuario(resposta.user);
-  const token = obterToken();
+  const token = tokenAtual();
   if (token) salvarSessao(usuario, token);
   return usuario;
 }
 
-export async function buscarResumoDaEstante(): Promise<ResumoEstanteApi> {
-  const query = new URLSearchParams({ page: "1", pageSize: "100" });
-  const resposta = await requisicao<{
-    total: number;
-    totalPages: number;
-    results: ResumoEstanteApi["resultados"];
-  }>(`/books/my-books?${query.toString()}`);
-
-  return {
-    total: resposta.total,
-    totalPages: resposta.totalPages,
-    resultados: resposta.results,
-  };
+export async function buscarLivros(termo: string) {
+  const query = new URLSearchParams({ q: termo, page: "1" });
+  return requisicao<{ results: LivroCatalogoApi[] }>(`/books/search?${query.toString()}`);
 }
+
+export async function buscarMinhaEstante() {
+  const query = new URLSearchParams({ page: "1", pageSize: "100" });
+  return requisicao<{ results: LivroEstanteApi[]; total: number }>(`/books/my-books?${query.toString()}`);
+}
+
+export async function atualizarLivro(
+  googleBooksId: string,
+  dados: { isFavorite?: boolean; finishedAt?: string | null },
+) {
+  return requisicao(`/books/add`, {
+    method: "POST",
+    body: JSON.stringify({ googleBooksId, ...dados }),
+  });
+}
+
+export type { RespostaApi };

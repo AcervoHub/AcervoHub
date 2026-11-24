@@ -5,14 +5,19 @@ const generateToken = (payload: {
   email: string;
   username: string;
 }) => {
-  return jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET não configurado.");
+
+  return jwt.sign({ ...payload, userId: payload.id }, secret, {
+    expiresIn: (process.env.JWT_EXPIRES_IN || "7d") as jwt.SignOptions["expiresIn"],
   });
 };
 const verifyToken = (token: string) => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET!);
-  } catch (error) {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) return null;
+    return jwt.verify(token, secret, { algorithms: ["HS256"] });
+  } catch {
     return null;
   }
 };

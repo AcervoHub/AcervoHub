@@ -1,7 +1,6 @@
-import Router from 'express';
-import { Cadastro, Login, Me, UpdateUser } from '../controllers/users/user.controller';
-import authMiddleware from '../middlewares/auth.middleware';
-// Criar sistema de rate limit
+import { Router } from 'express';
+import { Cadastro, Login, Me, UpdateUser } from '../controllers/users/user.controller.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const userRoutes = Router();
 

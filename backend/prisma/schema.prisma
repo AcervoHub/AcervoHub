@@ -19,6 +19,7 @@ model User {
   password  String
   avatarUrl String?
   createdAt DateTime @default(now())
+  bio String?
 
   library UserBook[]
 }
@@ -48,6 +49,9 @@ model UserBook {
   userId  String
   bookId  String
   status  BookReadingStatus @default(QUERO_LER)
+  isFavorite Boolean @default(false)
+  rating  Int?
+  comment String?
   startedAt DateTime?
   finishedAt DateTime?
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)

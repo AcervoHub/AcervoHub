@@ -1,0 +1,310 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--fundo-pagina);
+}
+
+.menu {
+  width: 260px;
+  height: 100vh;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
+  background-color: var(--superficie-sidebar);
+  border-right: 1px solid var(--borda-linha);
+  box-shadow: 1px 1px 9px var(--superficie-sidebar-hover);
+  display: flex;
+  flex-direction: column;
+}
+
+.iconeTitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconeBook {
+  background-color: var(--marca-principal);
+  border-radius: 50%;
+  padding: 8px;
+  color: white;
+  width: 40px;
+  height: 40px;
+  margin-left: 7px;
+  flex-shrink: 0;
+}
+
+.titulo {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--marca-principal);
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.buttons {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.divisor {
+  border: none;
+  border-top: 1px solid var(--borda-linha);
+  margin: 60px 0 16px;
+  width: 100%;
+}
+
+.perfilArea {
+  margin-bottom: 6px;
+}
+
+.perfilCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.perfilCard:hover {
+  background-color: var(--superficie-sidebar-hover);
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--superficie-sidebar-hover);
+  color: var(--marca-principal);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.perfilInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.perfilNome {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.perfilHandle {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--texto-secundario);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.perfilSeta {
+  color: var(--texto-secundario);
+  flex-shrink: 0;
+}
+
+.buttonsSecondary {
+  padding-top: 8px;
+}
+
+.buttonHome,
+.buttonSearch,
+.buttonDashboard,
+.buttonUser,
+.buttonExit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px 10px 20px;
+  gap: 12px;
+  color: var(--texto-secundario);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.buttonHome:hover,
+.buttonSearch:hover,
+.buttonDashboard:hover,
+.buttonUser:hover,
+.buttonExit:hover {
+  color: var(--marca-principal-hover);
+  background-color: var(--superficie-sidebar-hover);
+}
+
+.icone {
+  display: block;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.textButtons {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.conteudo {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0 60px 80px;
+}
+
+.headerDireito {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  margin-top: 110px;
+}
+
+.subTituloHeader {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 0.8em;
+  color: var(--texto-secundario);
+}
+
+.tituloHeader {
+  margin-top: 20px;
+  font-size: 2.8em;
+  color: var(--texto-principal);
+}
+
+.subTituloHeader2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 0.8em;
+  color: var(--texto-secundario);
+  margin-top: 20px;
+}
+
+.resumoLeitura {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 45px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.livrosLidos {
+  display: flex;
+  align-items: center;
+  background-color: var(--fundo-card-lidos);
+  gap: 14px;
+  border-radius: 12px;
+  padding: 24px 22px;
+}
+
+.iconeLido {
+  background-color: var(--alfa-icone-metrica-fundo);
+  color: var(--marca-principal);
+  padding: 9px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.PaginasLidas {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: var(--fundo-card-quero-ler);
+  border-radius: 12px;
+  padding: 24px 22px;
+}
+
+.iconePagLidas {
+  background-color: var(--alfa-icone-metrica-fundo);
+  color: var(--marca-principal);
+  padding: 9px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.FilaLeitura {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: var(--fundo-card-media-nota);
+  border-radius: 12px;
+  padding: 24px 22px;
+}
+
+.iconeFilaLeitura {
+  background-color: var(--alfa-icone-metrica-fundo);
+  color: var(--marca-principal);
+  padding: 9px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.conteudoResumo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quantidade {
+  color: var(--texto-principal);
+  font-size: 1.85rem;
+}
+
+.textResumo {
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}

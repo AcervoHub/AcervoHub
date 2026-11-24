@@ -1,14 +1,8 @@
-import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import prisma from "../../lib/prisma";
-import { generateToken } from "../../lib/jwt";
-import { AuthRequest } from "../../middlewares/auth.middleware";
-
-interface UpdateProfileBody {
-  name?: string;
-  avatarUrl?: string | null;
-}
+import type { Request, Response } from "express";
+import bcrypt from "bcryptjs";
+import prisma from "../../lib/prisma.js";
+import { generateToken } from "../../lib/jwt.js";
+import type { AuthRequest } from "../../middlewares/auth.middleware.js";
 
 function sanitizeUserName(value: unknown): string {
   return typeof value === "string"
@@ -53,15 +47,19 @@ const Cadastro = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Informe um e-mail válido." });
     }
     if (password.length < 6 || Buffer.byteLength(password, "utf8") > 72) {
-      return res.status(400).json({
-        error: "A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.",
-      });
+      return res
+        .status(400)
+        .json({
+          error: "A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.",
+        });
     }
     if (!usernameIsValid(username)) {
-      return res.status(400).json({
-        error:
-          "O username deve ter de 3 a 24 caracteres: letras, números ou _.",
-      });
+      return res
+        .status(400)
+        .json({
+          error:
+            "O username deve ter de 3 a 24 caracteres: letras, números ou _.",
+        });
     }
 
     const emailNormalizado = String(email).trim().toLowerCase();
@@ -96,9 +94,10 @@ const Cadastro = async (req: Request, res: Response) => {
       username: user.name,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Usuário cadastrado",
       user: usuarioPublico(user),
+      token,
     });
   } catch (error) {
     console.error(error);
@@ -158,49 +157,37 @@ const Login = async (req: Request, res: Response) => {
 
 const Me = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.userId;
-
-    if (!userId) {
+    if (!req.userId) {
       return res.status(401).json({ error: "Usuário não autenticado." });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado." });
     }
 
-    res.status(200).json({ user: usuarioPublico(user) });
+    return res.status(200).json({ user: usuarioPublico(user) });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erro interno do servidor." });
+    return res.status(500).json({ error: "Erro interno do servidor." });
   }
 };
 
 const UpdateUser = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.userId;
-
-    if (!userId) {
+    if (!req.userId) {
       return res.status(401).json({ error: "Usuário não autenticado." });
     }
 
     const body =
       req.body && typeof req.body === "object" && !Array.isArray(req.body)
-        ? (req.body as UpdateProfileBody)
+        ? (req.body as { name?: unknown; avatarUrl?: unknown; bio?: unknown })
         : null;
-
     if (!body) {
       return res.status(400).json({ error: "Requisição inválida." });
     }
 
-    const { name, avatarUrl } = body;
-
-    if (name === undefined && avatarUrl === undefined) {
-      return res.status(400).json({ error: "Nenhum campo para atualizar." });
-    }
+    const { name, avatarUrl, bio } = body;
 
     if (
       typeof name !== "string" ||
@@ -212,51 +199,52 @@ const UpdateUser = async (req: AuthRequest, res: Response) => {
         .json({ error: "O nome deve ter de 2 a 80 caracteres." });
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { id: true },
+    });
+    if (!existingUser) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
     if (
       avatarUrl !== undefined &&
       avatarUrl !== null &&
       (typeof avatarUrl !== "string" || avatarUrl.length > 2048)
     ) {
-      return res.status(400).json({ error: "A URL da foto é inválida" });
+      return res.status(400).json({ error: "A URL da foto é inválida." });
+    }
+
+    if (bio !== undefined && bio !== null && (typeof bio !== "string" || bio.length > 500)) {
+      return res.status(400).json({ error: "A bio deve ter até 500 caracteres." });
     }
 
     if (typeof avatarUrl === "string") {
       try {
         const url = new URL(avatarUrl);
-        const localDevelopmentUrl = "http://localhost:3000";
-
-        if (url.protocol !== "https:" && !localDevelopmentUrl) {
+        if (url.protocol !== "https:" && url.hostname !== "localhost") {
           return res
             .status(400)
             .json({ error: "A URL da foto deve ser HTTPS." });
         }
-      } catch (error) {
-        return res.status(400).json({ error: "A URL da foto é inválida" });
+      } catch {
+        return res.status(400).json({ error: "A URL da foto é inválida." });
       }
     }
 
-    const usuarioAnterior = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!usuarioAnterior) {
-      return res.status(404).json({ error: "Usuário não encontrado." });
-    }
-
-    const usuarioAtualizado = await prisma.user.update({
-      where: { id: userId },
+    const user = await prisma.user.update({
+      where: { id: req.userId },
       data: {
-        name,
+        name: name.trim(),
         avatarUrl: avatarUrl === undefined ? undefined : avatarUrl,
+        bio: bio === undefined ? undefined : bio,
       },
     });
 
-    const usuarioPublicoAtualizado = usuarioPublico(usuarioAtualizado);
-
-    res.status(200).json({ user: usuarioPublicoAtualizado });
+    return res.status(200).json({ user: usuarioPublico(user) });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erro interno do servidor." });
+    return res.status(500).json({ error: "Erro interno do servidor." });
   }
 };
 

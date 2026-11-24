@@ -1,16 +1,13 @@
 import { Response } from "express";
-import prisma from "../../lib/prisma";
-import type { AuthRequest } from "../../middlewares/auth.middleware";
-import { searchGoogleBooks, getGoogleBook } from "../../services/googleBooks.service";
-import { cache } from "../../lib/cache";
-import { Prisma } from "../../../generated/prisma/client";
-import { BookReadingStatus } from "../../../generated/prisma/enums";
+import prisma from "../../lib/prisma.js";
+import type { AuthRequest } from "../../middlewares/auth.middleware.js";
+import { searchGoogleBooks, getGoogleBook } from "../../services/googleBooks.service.js";
+import { cache } from "../../lib/cache.js";
+import { Prisma } from "../../../generated/prisma/client.js";
 
 const userBookArgs = {
     include: {
-        book: true,
-        favorite: true,
-        review: true,
+        book: true
     }
 } satisfies Prisma.UserBookDefaultArgs;
 
@@ -19,13 +16,19 @@ type UserBookWithBook = Prisma.UserBookGetPayload<
 >;
 
 type PersonalFields = {
-  status?: 'queroLer' | 'lidos';
+  status?: "QUERO_LER" | "LIDOS";
   isFavorite?: boolean;
   rating?: number | null;
   comment?: string | null;
   startedAt?: string | null;
   finishedAt?: string | null;
 };
+
+interface UpdateProfileBody {
+  name?: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
+}
 
 const booksCacheTag = (userId: string) => `user-books:${userId}`;
 
@@ -34,15 +37,19 @@ function isObjectBody(body: unknown): body is Record<string, unknown> {
   return Boolean(body) && typeof body === 'object' && !Array.isArray(body);
 }
 
+function usuarioPublico<T extends { password: string | null }>(usuario: T) {
+  const { password: _password, ...dados } = usuario;
+  return dados;
+}
+
 function validatePersonalFields(body: Record<string, unknown>, requireAnyField = false): { value?: PersonalFields; error?: string } {
   const allowed = new Set(['status', 'isFavorite', 'rating', 'comment', 'startedAt', 'finishedAt']);
   if (Object.keys(body).some((key) => !allowed.has(key))) return { error: 'O registro contém campos não permitidos.' };
   if (requireAnyField && Object.keys(body).length === 0) return { error: 'Informe ao menos um campo para atualizar.' };
 
-  if (body.status !== undefined && body.status !== 'queroLer' && body.status !== 'lidos') {
-    return { error: 'status deve ser "queroLer" ou "lidos".' };
+  if (body.status !== undefined && body.status !== "QUERO_LER" && body.status !== "LIDOS") {
+    return { error: 'O status informado é inválido.' };
   }
-
   if (body.isFavorite !== undefined && typeof body.isFavorite !== 'boolean') return { error: 'isFavorite deve ser true ou false.' };
 
   if (body.rating !== undefined && body.rating !== null && (!Number.isInteger(body.rating) || (body.rating as number) < 1 || (body.rating as number) > 5)) {
@@ -64,7 +71,6 @@ function validatePersonalFields(body: Record<string, unknown>, requireAnyField =
 
 async function persistCatalogBook(metadata: Awaited<ReturnType<typeof getGoogleBook>>) {
   const conditions = catalogMatchConditions(metadata);
-  const catalogData = { ...metadata, thumbnail: metadata.coverUrl };
   const updateCatalogMatch = async (existing: Awaited<ReturnType<typeof prisma.book.findFirst>>) => {
     if (!existing) throw new Error('BOOK_CATALOG_MATCH_MISSING');
     const [isbn10Owner, isbn13Owner] = await Promise.all([
@@ -74,7 +80,7 @@ async function persistCatalogBook(metadata: Awaited<ReturnType<typeof getGoogleB
     return prisma.book.update({
       where: { id: existing.id },
       data: {
-        ...catalogData,
+        ...metadata,
         googleBooksId: existing.googleBooksId,
         isbn10: existing.isbn10 ?? (isbn10Owner && isbn10Owner.id !== existing.id ? null : metadata.isbn10),
         isbn13: existing.isbn13 ?? (isbn13Owner && isbn13Owner.id !== existing.id ? null : metadata.isbn13),
@@ -84,7 +90,7 @@ async function persistCatalogBook(metadata: Awaited<ReturnType<typeof getGoogleB
   const existing = await prisma.book.findFirst({ where: { OR: conditions } });
   if (existing) return updateCatalogMatch(existing);
   try {
-    return await prisma.book.create({ data: catalogData });
+    return await prisma.book.create({ data: metadata });
   } catch (error) {
     // Two requests can add the same ISBN at the same time. Unique indexes are
     // the source of truth; re-read the winning catalog record after the race.
@@ -97,24 +103,13 @@ async function persistCatalogBook(metadata: Awaited<ReturnType<typeof getGoogleB
 }
 
 function serializeUserBook(entry: UserBookWithBook) {
-  return {
-    id: entry.id,
-    userId: entry.userId,
-    bookId: entry.bookId,
-    status: entry.status === 'LIDOS' ? 'lidos' : 'queroLer',
-    isFavorite: Boolean(entry.favorite),
-    rating: entry.review?.rating ?? null,
-    comment: entry.review?.comment ?? null,
-    startedAt: entry.startedAt?.toISOString() ?? null,
-    finishedAt: entry.finishedAt?.toISOString() ?? null,
-    createdAt: entry.createdAt.toISOString(),
-    updatedAt: entry.updatedAt.toISOString(),
-    book: {
-      ...entry.book,
-      id: entry.book.googleBooksId,
-      description: entry.book.description ?? '',
-    },
-  };
+    return {
+        ...entry.book,
+        description: entry.book.description ?? '',
+        libraryId: entry.id,
+        createdAt: entry.createdAt.toISOString(),
+        updatedAt: entry.updatedAt.toISOString(),
+    };
 }
 
 function providerError(res: Response, error: unknown) {
@@ -285,7 +280,6 @@ const addBook = async (req: AuthRequest, res: Response) => {
       error: "O parâmetro googleBooksId é inválido.",
     });
   }
-
   const validation = validatePersonalFields(personalFields);
   if(validation.error) return res.status(400).json({ error: validation.error });
 
@@ -307,65 +301,74 @@ const addBook = async (req: AuthRequest, res: Response) => {
 
     const book = await persistCatalogBook(metadata);
 
-    const relation = { userId_bookId: { userId, bookId: book.id } };
-    const status: BookReadingStatus | undefined = body.status === 'lidos'
-      ? BookReadingStatus.LIDOS
-      : body.status === 'queroLer'
-        ? BookReadingStatus.QUERO_LER
-        : undefined;
-    const finishedAt = body.finishedAt !== undefined
-      ? (body.finishedAt ? new Date(body.finishedAt) : null)
-      : body.status === 'lidos'
-        ? new Date()
-        : body.status === 'queroLer'
-          ? null
-          : undefined;
-    const libraryData = {
-      ...(status !== undefined ? { status } : {}),
-      ...(body.startedAt !== undefined ? { startedAt: body.startedAt ? new Date(body.startedAt) : null } : {}),
-      ...(finishedAt !== undefined ? { finishedAt } : {}),
+    const personalData = {
+        ...(body.status !== undefined ? { status: body.status } : {}),
+        ...(body.isFavorite !== undefined ? { isFavorite: body.isFavorite } : {}),
+        ...(body.rating !== undefined ? { rating: body.rating } : {}),
+        ...(body.comment !== undefined ? { comment: body.comment?.trim() || null } : {}),
+        ...(body.startedAt !== undefined ? { startedAt: body.startedAt ? new Date(body.startedAt) : null } : {}),
+        ...(body.finishedAt !== undefined ? { finishedAt: body.finishedAt ? new Date(body.finishedAt) : null } : {}),
+        ...(body.finishedAt !== undefined ? { status: body.finishedAt ? "LIDOS" as const : "QUERO_LER" as const } : {}),
     };
 
-    await prisma.userBook.upsert({
-      where: relation,
-      create: { userId, bookId: book.id, ...libraryData },
-      update: libraryData,
+    const relation = {
+        userId_bookId: {
+            userId,
+            bookId: book.id
+        }
+    };
+
+    let entry = await prisma.userBook.findUnique({
+        where: relation,
+        include: { book: true }
     });
 
-    if (body.isFavorite !== undefined) {
-      if (body.isFavorite) {
-        await prisma.favorite.upsert({
-          where: relation,
-          create: { userId, bookId: book.id },
-          update: {},
-        });
-      } else {
-        await prisma.favorite.deleteMany({ where: { userId, bookId: book.id } });
-      }
+    if (entry) {
+        if (Object.keys(personalData).length > 0) {
+            entry = await prisma.userBook.update({
+                where: relation,
+                data: personalData,
+                include: { book: true }
+            });
+        }
+    } else {
+        try {
+            entry = await prisma.userBook.create({
+                data: {
+                    ...personalData,
+                    userId,
+                    bookId: book.id
+                },
+                include: { book: true }
+            });
+
+        } catch (error) {
+            if (
+                !(error &&
+                typeof error === 'object' &&
+                'code' in error &&
+                error.code === 'P2002')
+            ) {
+                throw error;
+            }
+
+            entry = await prisma.userBook.findUnique({
+                where: relation,
+                include: { book: true }
+            });
+
+            if (!entry) throw error;
+
+            if (Object.keys(personalData).length > 0) {
+                entry = await prisma.userBook.update({
+                    where: relation,
+                    data: personalData,
+                    include: { book: true }
+                });
+            }
+        }
     }
 
-    if (body.rating !== undefined || body.comment !== undefined) {
-      const existingReview = await prisma.review.findUnique({ where: relation });
-      const rating = body.rating !== undefined ? body.rating : existingReview?.rating ?? null;
-      const comment = body.comment !== undefined
-        ? (body.comment?.trim() || null)
-        : existingReview?.comment ?? null;
-
-      if (rating === null && comment === null) {
-        await prisma.review.deleteMany({ where: { userId, bookId: book.id } });
-      } else {
-        await prisma.review.upsert({
-          where: relation,
-          create: { userId, bookId: book.id, rating, comment },
-          update: { rating, comment },
-        });
-      }
-    }
-
-    const entry = await prisma.userBook.findUnique({
-      where: relation,
-      ...userBookArgs,
-    });
     if (!entry) throw new Error('BOOK_ENTRY_CREATE_FAILED');
 
     cache.invalidateTag(booksCacheTag(userId));
@@ -416,9 +419,7 @@ const getBooks = async (req: AuthRequest, res: Response) => {
 
       const where = {
         userId,
-        ...(isFavorite !== undefined
-          ? { favorite: isFavorite ? { isNot: null } : { is: null } }
-          : {}),
+        ...(isFavorite !== undefined ? { isFavorite } : {})
       };
 
       const [total, entries] = await Promise.all([
@@ -428,7 +429,9 @@ const getBooks = async (req: AuthRequest, res: Response) => {
 
         prisma.userBook.findMany({
           where,
-          ...userBookArgs,
+          include: {
+            book: true
+          },
           skip: (page - 1) * pageSize,
           take: pageSize
         })
@@ -441,16 +444,98 @@ const getBooks = async (req: AuthRequest, res: Response) => {
         totalPages: Math.ceil(total / pageSize),
         results: entries
       };
-    });
+    }, [booksCacheTag(userId)]);
 
-    return res.json({
-      ...result,
-      results: result.results.map(serializeUserBook),
-    });
+    return res.json(result);
 
   } catch (error) {
     return providerError(res, error);
   }
 };
 
-export { searchBooks, addBook, getBooks };
+const UpdateUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? (req.body as UpdateProfileBody)
+        : null;
+
+    if (!body) {
+      return res.status(400).json({ error: "Requisição inválida." });
+    }
+
+    const { name, avatarUrl, bio } = body;
+
+    if (name === undefined && avatarUrl === undefined && bio === undefined) {
+      return res.status(400).json({ error: "Nenhum campo para atualizar." });
+    }
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length < 2 ||
+      name.trim().length > 80
+    ) {
+      return res
+        .status(400)
+        .json({ error: "O nome deve ter de 2 a 80 caracteres." });
+    }
+
+    if (
+      avatarUrl !== undefined &&
+      avatarUrl !== null &&
+      (typeof avatarUrl !== "string" || avatarUrl.length > 2048)
+    ) {
+      return res.status(400).json({ error: "A URL da foto é inválida" });
+    }
+
+    if (bio !== undefined && bio !== null && (typeof bio !== "string" || bio.length > 500)) {
+      return res.status(400).json({ error: "A bio deve ter até 500 caracteres." });
+    }
+    if (typeof avatarUrl === "string") {
+      try {
+        const url = new URL(avatarUrl);
+        const localDevelopmentUrl = "http://localhost:3000";
+
+        if (url.protocol !== "https:" && !localDevelopmentUrl) {
+          return res
+            .status(400)
+            .json({ error: "A URL da foto deve ser HTTPS." });
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "A URL da foto é inválida" });
+      }
+    }
+
+    const usuarioAnterior = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!usuarioAnterior) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    const usuarioAtualizado = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        avatarUrl: avatarUrl === undefined ? undefined : avatarUrl,
+        bio: bio === undefined ? undefined : bio,
+      },
+    });
+
+    const usuarioPublicoAtualizado = usuarioPublico(usuarioAtualizado);
+
+    res.status(200).json({ user: usuarioPublicoAtualizado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+export { searchBooks, addBook, getBooks, UpdateUser };

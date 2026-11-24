@@ -1,4 +1,4 @@
-import { cache } from "../lib/cache";
+import { cache } from "../lib/cache.js";
 
 const GOOGLE_BOOKS_API = 'https://www.googleapis.com/books/v1/volumes';
 const BOOKS_SEARCH_TTL_MS = 5 * 60 * 1000;

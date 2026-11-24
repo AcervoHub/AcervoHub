@@ -67,9 +67,15 @@
 
   /* Avatares ilustrativos da comunidade */
   --avatar-marina: #DFE8D3;
+  --avatar-juan: #d9e9c4;
   --avatar-rafael: #ECD8CF;
   --avatar-clara: #D8E1E8;
   --avatar-joao: #EADFC8;
+
+  /* Fundos suaves dos cards de resumo */
+  --fundo-card-lidos: #E3EAE0;
+  --fundo-card-quero-ler: #EFE3DC;
+  --fundo-card-media-nota: #F2ECDA;
 
   /* Prévia do tema "Sistema" */
   --previa-sistema-noite: #33493E;
