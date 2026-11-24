@@ -977,14 +977,14 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'BookReadingStatus'
  */
 export type EnumBookReadingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookReadingStatus'>
-
+    
 
 
 /**
  * Reference to a field of type 'BookReadingStatus[]'
  */
 export type ListEnumBookReadingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookReadingStatus[]'>
-
+    
 
 
 /**

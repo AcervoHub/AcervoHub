@@ -158,55 +158,55 @@ export type BookAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   where?: Prisma.BookWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-   *
+   * 
    * Determine the order of Books to fetch.
    */
   orderBy?: Prisma.BookOrderByWithRelationInput | Prisma.BookOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-   *
+   * 
    * Sets the start position
    */
   cursor?: Prisma.BookWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Take `±n` Books from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Skip the first `n` Books.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Count returned Books
   **/
   _count?: true | BookCountAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to average
   **/
   _avg?: BookAvgAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to sum
   **/
   _sum?: BookSumAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: BookMinAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to find the maximum value
   **/
   _max?: BookMaxAggregateInputType
@@ -949,13 +949,13 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * @example
    * // Get all Books
    * const books = await prisma.book.findMany()
-   *
+   * 
    * // Get first 10 Books
    * const books = await prisma.book.findMany({ take: 10 })
-   *
+   * 
    * // Only select the `id`
    * const bookWithIdOnly = await prisma.book.findMany({ select: { id: true } })
-   *
+   * 
    */
   findMany<T extends BookFindManyArgs>(args?: Prisma.SelectSubset<T, BookFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -969,7 +969,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... data to create a Book
    *   }
    * })
-   *
+   * 
    */
   create<T extends BookCreateArgs>(args: Prisma.SelectSubset<T, BookCreateArgs<ExtArgs>>): Prisma.Prisma__BookClient<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -997,7 +997,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... provide data here
    *   ]
    * })
-   *
+   * 
    * // Create many Books and only return the `id`
    * const bookWithIdOnly = await prisma.book.createManyAndReturn({
    *   select: { id: true },
@@ -1007,7 +1007,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * })
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   *
+   * 
    */
   createManyAndReturn<T extends BookCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, BookCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -1021,7 +1021,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... filter to delete one Book
    *   }
    * })
-   *
+   * 
    */
   delete<T extends BookDeleteArgs>(args: Prisma.SelectSubset<T, BookDeleteArgs<ExtArgs>>): Prisma.Prisma__BookClient<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -1038,7 +1038,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... provide data here
    *   }
    * })
-   *
+   * 
    */
   update<T extends BookUpdateArgs>(args: Prisma.SelectSubset<T, BookUpdateArgs<ExtArgs>>): Prisma.Prisma__BookClient<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -1052,7 +1052,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... provide filter here
    *   }
    * })
-   *
+   * 
    */
   deleteMany<T extends BookDeleteManyArgs>(args?: Prisma.SelectSubset<T, BookDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
@@ -1071,7 +1071,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... provide data here
    *   }
    * })
-   *
+   * 
    */
   updateMany<T extends BookUpdateManyArgs>(args: Prisma.SelectSubset<T, BookUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
@@ -1088,7 +1088,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     // ... provide data here
    *   ]
    * })
-   *
+   * 
    * // Update zero or more Books and only return the `id`
    * const bookWithIdOnly = await prisma.book.updateManyAndReturn({
    *   select: { id: true },
@@ -1101,7 +1101,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * })
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   *
+   * 
    */
   updateManyAndReturn<T extends BookUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, BookUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -1190,7 +1190,7 @@ export interface BookDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    *     _all: true
    *   },
    * })
-   *
+   * 
   **/
   groupBy<
     T extends BookGroupByArgs,
@@ -1380,31 +1380,31 @@ export type BookFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   where?: Prisma.BookWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-   *
+   * 
    * Determine the order of Books to fetch.
    */
   orderBy?: Prisma.BookOrderByWithRelationInput | Prisma.BookOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-   *
+   * 
    * Sets the position for searching for Books.
    */
   cursor?: Prisma.BookWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Take `±n` Books from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Skip the first `n` Books.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   *
+   * 
    * Filter by unique combinations of Books.
    */
   distinct?: Prisma.BookScalarFieldEnum | Prisma.BookScalarFieldEnum[]
@@ -1432,31 +1432,31 @@ export type BookFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
   where?: Prisma.BookWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-   *
+   * 
    * Determine the order of Books to fetch.
    */
   orderBy?: Prisma.BookOrderByWithRelationInput | Prisma.BookOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-   *
+   * 
    * Sets the position for searching for Books.
    */
   cursor?: Prisma.BookWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Take `±n` Books from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Skip the first `n` Books.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   *
+   * 
    * Filter by unique combinations of Books.
    */
   distinct?: Prisma.BookScalarFieldEnum | Prisma.BookScalarFieldEnum[]
@@ -1484,31 +1484,31 @@ export type BookFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   where?: Prisma.BookWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-   *
+   * 
    * Determine the order of Books to fetch.
    */
   orderBy?: Prisma.BookOrderByWithRelationInput | Prisma.BookOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-   *
+   * 
    * Sets the position for listing Books.
    */
   cursor?: Prisma.BookWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Take `±n` Books from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-   *
+   * 
    * Skip the first `n` Books.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   *
+   * 
    * Filter by unique combinations of Books.
    */
   distinct?: Prisma.BookScalarFieldEnum | Prisma.BookScalarFieldEnum[]
