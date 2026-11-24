@@ -16,12 +16,19 @@ type UserBookWithBook = Prisma.UserBookGetPayload<
 >;
 
 type PersonalFields = {
+  status?: "QUERO_LER" | "LIDOS";
   isFavorite?: boolean;
   rating?: number | null;
   comment?: string | null;
   startedAt?: string | null;
   finishedAt?: string | null;
 };
+
+interface UpdateProfileBody {
+  name?: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
+}
 
 const booksCacheTag = (userId: string) => `user-books:${userId}`;
 
@@ -30,11 +37,19 @@ function isObjectBody(body: unknown): body is Record<string, unknown> {
   return Boolean(body) && typeof body === 'object' && !Array.isArray(body);
 }
 
+function usuarioPublico<T extends { password: string | null }>(usuario: T) {
+  const { password: _password, ...dados } = usuario;
+  return dados;
+}
+
 function validatePersonalFields(body: Record<string, unknown>, requireAnyField = false): { value?: PersonalFields; error?: string } {
   const allowed = new Set(['status', 'isFavorite', 'rating', 'comment', 'startedAt', 'finishedAt']);
   if (Object.keys(body).some((key) => !allowed.has(key))) return { error: 'O registro contém campos não permitidos.' };
   if (requireAnyField && Object.keys(body).length === 0) return { error: 'Informe ao menos um campo para atualizar.' };
 
+  if (body.status !== undefined && body.status !== "QUERO_LER" && body.status !== "LIDOS") {
+    return { error: 'O status informado é inválido.' };
+  }
   if (body.isFavorite !== undefined && typeof body.isFavorite !== 'boolean') return { error: 'isFavorite deve ser true ou false.' };
 
   if (body.rating !== undefined && body.rating !== null && (!Number.isInteger(body.rating) || (body.rating as number) < 1 || (body.rating as number) > 5)) {
@@ -254,24 +269,26 @@ const searchBooks = async (req: AuthRequest, res: Response) => {
 
 
 const addBook = async (req: AuthRequest, res: Response) => {
-  const { googleBooksId } = req.body;
+  if (!isObjectBody(req.body)) {
+    return res.status(400).json({ error: 'Envie os dados do livro em formato JSON.' });
+  }
+
+  const { googleBooksId, ...personalFields } = req.body;
 
   if(typeof googleBooksId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(googleBooksId)) {
     return res.status(400).json({
       error: "O parâmetro googleBooksId é inválido.",
     });
   }
-  if(!isObjectBody(req.body)) return res.status(400).json({ error: 'Envie os dados pessoais do livro.' });
-
-  const validation = validatePersonalFields(req.body)
+  const validation = validatePersonalFields(personalFields);
   if(validation.error) return res.status(400).json({ error: validation.error });
 
   const body = validation.value!;
-  const userId = req!.userId;
+  const userId = req.userId;
 
   if (!userId) {
-    throw new Error('Usuário não identificado');
-}
+    return res.status(401).json({ error: 'Usuário não autenticado.' });
+  }
 
   try {
     const metadata = await getGoogleBook(googleBooksId);
@@ -285,11 +302,13 @@ const addBook = async (req: AuthRequest, res: Response) => {
     const book = await persistCatalogBook(metadata);
 
     const personalData = {
+        ...(body.status !== undefined ? { status: body.status } : {}),
         ...(body.isFavorite !== undefined ? { isFavorite: body.isFavorite } : {}),
         ...(body.rating !== undefined ? { rating: body.rating } : {}),
         ...(body.comment !== undefined ? { comment: body.comment?.trim() || null } : {}),
         ...(body.startedAt !== undefined ? { startedAt: body.startedAt ? new Date(body.startedAt) : null } : {}),
         ...(body.finishedAt !== undefined ? { finishedAt: body.finishedAt ? new Date(body.finishedAt) : null } : {}),
+        ...(body.finishedAt !== undefined ? { status: body.finishedAt ? "LIDOS" as const : "QUERO_LER" as const } : {}),
     };
 
     const relation = {
@@ -372,10 +391,7 @@ const getBooks = async (req: AuthRequest, res: Response) => {
     });
   }
 
-  if (
-    favoriteParam !== undefined &&
-    typeof favoriteParam !== 'boolean'
-  ) {
+  if (favoriteParam !== undefined && favoriteParam !== 'true' && favoriteParam !== 'false') {
     return res.status(400).json({
       error: 'O parâmetro isFavorite deve ser true ou false.'
     });
@@ -428,7 +444,7 @@ const getBooks = async (req: AuthRequest, res: Response) => {
         totalPages: Math.ceil(total / pageSize),
         results: entries
       };
-    });
+    }, [booksCacheTag(userId)]);
 
     return res.json(result);
 
@@ -437,4 +453,89 @@ const getBooks = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { searchBooks, addBook, getBooks };
+const UpdateUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? (req.body as UpdateProfileBody)
+        : null;
+
+    if (!body) {
+      return res.status(400).json({ error: "Requisição inválida." });
+    }
+
+    const { name, avatarUrl, bio } = body;
+
+    if (name === undefined && avatarUrl === undefined && bio === undefined) {
+      return res.status(400).json({ error: "Nenhum campo para atualizar." });
+    }
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length < 2 ||
+      name.trim().length > 80
+    ) {
+      return res
+        .status(400)
+        .json({ error: "O nome deve ter de 2 a 80 caracteres." });
+    }
+
+    if (
+      avatarUrl !== undefined &&
+      avatarUrl !== null &&
+      (typeof avatarUrl !== "string" || avatarUrl.length > 2048)
+    ) {
+      return res.status(400).json({ error: "A URL da foto é inválida" });
+    }
+
+    if (bio !== undefined && bio !== null && (typeof bio !== "string" || bio.length > 500)) {
+      return res.status(400).json({ error: "A bio deve ter até 500 caracteres." });
+    }
+    if (typeof avatarUrl === "string") {
+      try {
+        const url = new URL(avatarUrl);
+        const localDevelopmentUrl = "http://localhost:3000";
+
+        if (url.protocol !== "https:" && !localDevelopmentUrl) {
+          return res
+            .status(400)
+            .json({ error: "A URL da foto deve ser HTTPS." });
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "A URL da foto é inválida" });
+      }
+    }
+
+    const usuarioAnterior = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!usuarioAnterior) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    const usuarioAtualizado = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        avatarUrl: avatarUrl === undefined ? undefined : avatarUrl,
+        bio: bio === undefined ? undefined : bio,
+      },
+    });
+
+    const usuarioPublicoAtualizado = usuarioPublico(usuarioAtualizado);
+
+    res.status(200).json({ user: usuarioPublicoAtualizado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+export { searchBooks, addBook, getBooks, UpdateUser };

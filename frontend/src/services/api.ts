@@ -1,5 +1,6 @@
 const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3000/api").replace(/\/$/, "");
-const TOKEN_KEY = "bookspace.auth.token";
+const TOKEN_KEY = "acervohub.auth.token";
+const USER_KEY = "acervohub.auth.user";
 
 export interface UsuarioApi {
   id: string;
@@ -7,6 +8,7 @@ export interface UsuarioApi {
   email: string;
   arroba: string;
   fotoUrl: string | null;
+  bio?: string;
 }
 
 export interface LivroCatalogoApi {
@@ -50,8 +52,30 @@ function tokenAtual() {
   return sessionStorage.getItem(TOKEN_KEY);
 }
 
+export function temSessao() {
+  return Boolean(tokenAtual());
+}
+
+export function obterUsuarioSalvo(): UsuarioApi | null {
+  const salvo = sessionStorage.getItem(USER_KEY);
+  if (!salvo) return null;
+
+  try {
+    return JSON.parse(salvo) as UsuarioApi;
+  } catch {
+    sessionStorage.removeItem(USER_KEY);
+    return null;
+  }
+}
+
+function salvarSessao(usuario: UsuarioApi, token: string) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(USER_KEY, JSON.stringify(usuario));
+}
+
 export function encerrarSessaoApi() {
   sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
 }
 
 async function requisicao<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -78,13 +102,14 @@ async function requisicao<T>(path: string, init: RequestInit = {}): Promise<T> {
   return payload;
 }
 
-function mapearUsuario(user: { id: string; name: string; email: string; avatarUrl?: string | null }): UsuarioApi {
+function mapearUsuario(user: { id: string; name: string; email: string; avatarUrl?: string | null; bio?: string | null }): UsuarioApi {
   return {
     id: user.id,
     nome: user.name,
     email: user.email,
     arroba: `@${user.name}`,
     fotoUrl: user.avatarUrl ?? null,
+    bio: user.bio ?? undefined,
   };
 }
 
@@ -100,10 +125,6 @@ function gerarUsername(nome: string) {
   return username.length >= 3 ? username : `leitor_${username}`.slice(0, 24);
 }
 
-function salvarToken(token: string) {
-  sessionStorage.setItem(TOKEN_KEY, token);
-}
-
 export async function fazerLogin(email: string, senha: string) {
   const resposta = await requisicao<{
     user: { id: string; name: string; email: string; avatarUrl?: string | null };
@@ -112,8 +133,9 @@ export async function fazerLogin(email: string, senha: string) {
     method: "POST",
     body: JSON.stringify({ email, password: senha }),
   });
-  salvarToken(resposta.token);
-  return mapearUsuario(resposta.user);
+  const usuario = mapearUsuario(resposta.user);
+  salvarSessao(usuario, resposta.token);
+  return usuario;
 }
 
 export async function fazerCadastro(nome: string, email: string, senha: string) {
@@ -127,9 +149,33 @@ export async function fazerCadastro(nome: string, email: string, senha: string) 
 
   // Login é o fallback para servidores que ainda não retornam o token no cadastro.
   if (!resposta.token) return fazerLogin(email, senha);
-  salvarToken(resposta.token);
   const usuario = mapearUsuario(resposta.user);
-  return { ...usuario, nome: nome.trim() };
+  const usuarioAutenticado = { ...usuario, nome: nome.trim() };
+  salvarSessao(usuarioAutenticado, resposta.token);
+  return usuarioAutenticado;
+}
+
+export async function buscarMeuPerfil() {
+  const resposta = await requisicao<{
+    user: { id: string; name: string; email: string; avatarUrl?: string | null };
+  }>("/users/me");
+  const usuario = mapearUsuario(resposta.user);
+  const token = tokenAtual();
+  if (token) salvarSessao(usuario, token);
+  return usuario;
+}
+
+export async function atualizarMeuPerfil(dados: { name: string; bio: string }) {
+  const resposta = await requisicao<{
+    user: { id: string; name: string; email: string; avatarUrl?: string | null; bio: string };
+  }>("/users/update", {
+    method: "PUT",
+    body: JSON.stringify(dados),
+  });
+  const usuario = mapearUsuario(resposta.user);
+  const token = tokenAtual();
+  if (token) salvarSessao(usuario, token);
+  return usuario;
 }
 
 export async function buscarLivros(termo: string) {

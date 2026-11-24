@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum BookReadingStatus {
+  QUERO_LER
+  LIDOS
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -14,6 +19,7 @@ model User {
   password  String
   avatarUrl String?
   createdAt DateTime @default(now())
+  bio String?
 
   library UserBook[]
 }
@@ -24,10 +30,15 @@ model Book {
   isbn10        String?  @unique
   isbn13        String?  @unique
   title         String
+  subtitle      String?
   authors       String[]
   description   String?
+  publisher     String?
   thumbnail     String?
+  coverUrl      String?
   publishedDate String?
+  pageCount     Int?
+  language      String?
   categories    String[]
   createdAt     DateTime @default(now())
   users UserBook[]
@@ -37,6 +48,12 @@ model UserBook {
   id      String   @id @default(cuid())
   userId  String
   bookId  String
+  status  BookReadingStatus @default(QUERO_LER)
+  isFavorite Boolean @default(false)
+  rating  Int?
+  comment String?
+  startedAt DateTime?
+  finishedAt DateTime?
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   book     Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   favorite Favorite?
@@ -62,7 +79,8 @@ model Review {
   id        String   @id @default(cuid())
   userId    String
   bookId    String
-  rating    Int
+  rating    Int?
+  comment   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

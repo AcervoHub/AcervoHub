@@ -75,21 +75,6 @@ export function Usuario({
     const [erro, setErro] = useState<string | null>(null);
 
     useEffect(() => {
-        setUsuario(usuarioInicial);
-        if (usuarioInicial) {
-            setNomeForm(usuarioInicial.nome ?? '');
-            setArrobaForm(usuarioInicial.arroba ?? '');
-            setBioForm(usuarioInicial.bio ?? '');
-        }
-    }, [usuarioInicial]);
-
-    useEffect(() => {
-        if (!resumoInicial) return;
-        setTotalLidos(resumoInicial.livrosLidos);
-        setTotalQueroLer(resumoInicial.queroLer);
-    }, [resumoInicial]);
-
-    useEffect(() => {
         let ativo = true;
 
         async function carregarPerfil() {

@@ -95,17 +95,13 @@ export function Home({
   aoAlternarJaLiCuradoria,
   aoRemoverLivroEstante,
 }: HomeProps) {
-  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(usuarioInicial);
+  const usuario = usuarioInicial;
   const [abaEstante, setAbaEstante] = useState<'queroLer' | 'lidos'>('queroLer');
   const [livrosCuradoria, setLivrosCuradoria] = useState<LivroCuradoria[]>([]);
   const [livrosEstante, setLivrosEstante] = useState<LivroEstante[]>([]);
   const [mediaNotasApi, setMediaNotasApi] = useState<number | null>(null);
   const [carregando, setCarregando] = useState<boolean>(Boolean(buscarDadosHome));
   const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    setUsuario(usuarioInicial);
-  }, [usuarioInicial]);
 
   useEffect(() => {
     let ativo = true;
@@ -123,7 +119,6 @@ export function Home({
         const dados = await buscarDadosHome();
         if (!ativo) return;
 
-        if (dados.usuario) setUsuario(dados.usuario);
         if (dados.curadoria) setLivrosCuradoria(dados.curadoria);
         if (dados.estante) setLivrosEstante(dados.estante);
         if (dados.resumo && typeof dados.resumo.mediaNotas === 'number') {

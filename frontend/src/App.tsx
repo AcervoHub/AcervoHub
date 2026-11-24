@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Login, type RespostaAutenticacao } from './pages/login';
 import { Home, type RotaMenu, type UsuarioPerfil } from './pages/home';
 import { Search } from './pages/search';
@@ -6,18 +6,50 @@ import { Dashboard } from './pages/dashboard';
 import { Usuario } from './pages/usuario';
 import {
   atualizarLivro,
+  atualizarMeuPerfil,
+  buscarMeuPerfil,
   buscarLivros,
   buscarMinhaEstante,
   encerrarSessaoApi,
   fazerCadastro,
   fazerLogin,
+  obterUsuarioSalvo,
+  temSessao,
 } from './services/api';
 
 export type TelaAtiva = 'login' | RotaMenu;
 
 export function App() {
-  const [telaAtual, setTelaAtual] = useState<TelaAtiva>('login');
-  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(null);
+  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(() => obterUsuarioSalvo());
+  const [telaAtual, setTelaAtual] = useState<TelaAtiva>(() =>
+    usuario ? 'home' : 'login',
+  );
+
+  useEffect(() => {
+    if (!temSessao()) return;
+
+    let ativo = true;
+    buscarMeuPerfil()
+      .then((perfil) => {
+        if (ativo) {
+          setUsuario(perfil);
+          setTelaAtual('home');
+        }
+      })
+      .catch((error: unknown) => {
+        if (!ativo) return;
+        if (!temSessao()) {
+          setUsuario(null);
+          setTelaAtual('login');
+          return;
+        }
+        console.error('Não foi possível atualizar o perfil da sessão:', error);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   function handleNavegar(rota: RotaMenu) {
     setTelaAtual(rota);
@@ -143,12 +175,15 @@ export function App() {
             },
           };
         }}
-        aoSalvarPerfil={(dadosAtualizados) => {
-          setUsuario((anterior) => ({
-            ...anterior,
-            nome: dadosAtualizados.nome,
+        aoSalvarPerfil={async (dadosAtualizados) => {
+          const perfilAtualizado = await atualizarMeuPerfil({
+            name: dadosAtualizados.nome,
+            bio: dadosAtualizados.bio,
+          });
+          setUsuario({
+            ...perfilAtualizado,
             arroba: dadosAtualizados.arroba,
-          }));
+          });
         }}
       />
     );

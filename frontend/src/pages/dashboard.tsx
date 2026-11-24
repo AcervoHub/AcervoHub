@@ -53,23 +53,12 @@ export function Dashboard({
   aoNavegar,
   aoSair,
 }: DashboardProps) {
-  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(usuarioInicial);
+  const usuario = usuarioInicial;
   const [livrosLidos, setLivrosLidos] = useState<number>(resumoInicial?.livrosLidos ?? 0);
   const [paginasLidas, setPaginasLidas] = useState<number>(resumoInicial?.paginasLidas ?? 0);
   const [filaLeitura, setFilaLeitura] = useState<number>(resumoInicial?.filaLeitura ?? 0);
   const [carregando, setCarregando] = useState<boolean>(Boolean(buscarDadosDashboard));
   const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    setUsuario(usuarioInicial);
-  }, [usuarioInicial]);
-
-  useEffect(() => {
-    if (!resumoInicial) return;
-    setLivrosLidos(resumoInicial.livrosLidos);
-    setPaginasLidas(resumoInicial.paginasLidas);
-    setFilaLeitura(resumoInicial.filaLeitura);
-  }, [resumoInicial]);
 
   useEffect(() => {
     let ativo = true;
@@ -87,7 +76,6 @@ export function Dashboard({
         const dados = await buscarDadosDashboard();
         if (!ativo) return;
 
-        if (dados.usuario) setUsuario(dados.usuario);
         if (dados.resumo) {
           setLivrosLidos(dados.resumo.livrosLidos);
           setPaginasLidas(dados.resumo.paginasLidas);

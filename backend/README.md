@@ -13,9 +13,3 @@ O servidor fica em `http://localhost:3000`. A origem local do Vite (`http://loca
 
 Consulte [`../docs/rotas-api.md`](../docs/rotas-api.md) para endpoints e limites atuais.
 
-
-
-## ToDo
-1- getMe para infos do usuário
-2- update das informações do usuário
-3- 

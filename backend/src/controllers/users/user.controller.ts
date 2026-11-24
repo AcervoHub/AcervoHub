@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../../lib/prisma.js";
 import { generateToken } from "../../lib/jwt.js";
+import type { AuthRequest } from "../../middlewares/auth.middleware.js";
 
 function sanitizeUserName(value: unknown): string {
   return typeof value === "string"
@@ -154,6 +155,97 @@ const Login = async (req: Request, res: Response) => {
   }
 };
 
+const Me = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
 
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
 
-export { Cadastro, Login };
+    return res.status(200).json({ user: usuarioPublico(user) });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+const UpdateUser = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? (req.body as { name?: unknown; avatarUrl?: unknown; bio?: unknown })
+        : null;
+    if (!body) {
+      return res.status(400).json({ error: "Requisição inválida." });
+    }
+
+    const { name, avatarUrl, bio } = body;
+
+    if (
+      typeof name !== "string" ||
+      name.trim().length < 2 ||
+      name.trim().length > 80
+    ) {
+      return res
+        .status(400)
+        .json({ error: "O nome deve ter de 2 a 80 caracteres." });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { id: true },
+    });
+    if (!existingUser) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    if (
+      avatarUrl !== undefined &&
+      avatarUrl !== null &&
+      (typeof avatarUrl !== "string" || avatarUrl.length > 2048)
+    ) {
+      return res.status(400).json({ error: "A URL da foto é inválida." });
+    }
+
+    if (bio !== undefined && bio !== null && (typeof bio !== "string" || bio.length > 500)) {
+      return res.status(400).json({ error: "A bio deve ter até 500 caracteres." });
+    }
+
+    if (typeof avatarUrl === "string") {
+      try {
+        const url = new URL(avatarUrl);
+        if (url.protocol !== "https:" && url.hostname !== "localhost") {
+          return res
+            .status(400)
+            .json({ error: "A URL da foto deve ser HTTPS." });
+        }
+      } catch {
+        return res.status(400).json({ error: "A URL da foto é inválida." });
+      }
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        name: name.trim(),
+        avatarUrl: avatarUrl === undefined ? undefined : avatarUrl,
+        bio: bio === undefined ? undefined : bio,
+      },
+    });
+
+    return res.status(200).json({ user: usuarioPublico(user) });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno do servidor." });
+  }
+};
+
+export { Cadastro, Login, Me, UpdateUser };
