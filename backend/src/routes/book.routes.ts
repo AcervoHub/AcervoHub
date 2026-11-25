@@ -8,4 +8,5 @@ bookRoutes.post('/add', addBook);
 bookRoutes.get('/my-books', getBooks);
 bookRoutes.delete('/delete', removeBook);
 
+// Teste
 export default bookRoutes;
