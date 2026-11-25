@@ -538,4 +538,54 @@ const UpdateUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export { searchBooks, addBook, getBooks, UpdateUser };
+const removeBook = async (req: AuthRequest, res: Response) => {
+  if (!isObjectBody(req.body)) {
+    return res.status(400).json({
+      error: 'Envie os dados em formato JSON.'
+    });
+  }
+
+  const { bookId } = req.body;
+
+  if (typeof bookId !== 'string' || !bookId.trim()) {
+    return res.status(400).json({
+      error: 'Identificador do livro inválido.'
+    });
+  }
+
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(401).json({
+      error: 'Usuário não autenticado.'
+    });
+  }
+
+  try {
+    const resultado = await prisma.userBook.deleteMany({
+      where: {
+        userId,
+        bookId
+      }
+    });
+
+    if (resultado.count === 0) {
+      return res.status(404).json({
+        error: 'Livro não encontrado na sua estante.'
+      });
+    }
+
+    cache.invalidateTag(booksCacheTag(userId));
+
+    return res.status(204).send();
+
+  } catch (error) {
+    console.error('Erro ao remover livro da biblioteca:', error);
+
+    return res.status(500).json({
+      error: 'Não foi possível remover o livro.'
+    });
+  }
+};
+
+export { searchBooks, addBook, getBooks, UpdateUser, removeBook };

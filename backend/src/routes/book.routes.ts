@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { searchBooks, addBook, getBooks } from "../controllers/books/book.controller.js";
+import { searchBooks, addBook, getBooks, removeBook } from "../controllers/books/book.controller.js";
 
 const bookRoutes = Router();
 
 bookRoutes.get('/search', searchBooks);
 bookRoutes.post('/add', addBook);
 bookRoutes.get('/my-books', getBooks);
+bookRoutes.put('/delete', removeBook);
 
 export default bookRoutes;
