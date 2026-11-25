@@ -198,4 +198,12 @@ export async function atualizarLivro(
   });
 }
 
+export async function removerLivro(bookId: string) {
+  return requisicao<void>("/books/delete", {
+    method: "DELETE",
+    body: JSON.stringify({ bookId }),
+  });
+}
+
+
 export type { RespostaApi };

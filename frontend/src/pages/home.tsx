@@ -39,6 +39,7 @@ export interface LivroCuradoria {
 
 export interface LivroEstante {
   id: number | string;
+  bookId: string;
   categoria: string;
   titulo: string;
   autor: string;
@@ -174,12 +175,23 @@ export function Home({
   }
 
   async function removerLivroEstante(id: number | string) {
-    setLivrosEstante((anterior) => anterior.filter((livro) => livro.id !== id));
+  const livro = livrosEstante.find((item) => item.id === id);
 
+  if (!livro) return;
+
+  try {
     if (aoRemoverLivroEstante) {
-      await aoRemoverLivroEstante(id);
+      await aoRemoverLivroEstante(livro.bookId);
     }
+
+    setLivrosEstante((anterior) =>
+      anterior.filter((item) => item.id !== id)
+    );
+  } catch (error) {
+    console.error('Erro ao remover livro:', error);
+    setErro('Não foi possível remover o livro da sua estante.');
   }
+}
 
   const totalQueroLer = livrosEstante.filter((livro) => livro.status === 'queroLer').length;
   const totalLidos = livrosEstante.filter((livro) => livro.status === 'lidos').length;

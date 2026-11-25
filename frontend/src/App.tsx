@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Login, type RespostaAutenticacao } from './pages/login';
-import { Home, type RotaMenu, type UsuarioPerfil } from './pages/home';
-import { Search } from './pages/search';
-import { Dashboard } from './pages/dashboard';
-import { Usuario } from './pages/usuario';
+import { useEffect, useState } from "react";
+import { Login, type RespostaAutenticacao } from "./pages/login";
+import { Home, type RotaMenu, type UsuarioPerfil } from "./pages/home";
+import { Search } from "./pages/search";
+import { Dashboard } from "./pages/dashboard";
+import { Usuario } from "./pages/usuario";
 import {
   atualizarLivro,
   atualizarMeuPerfil,
@@ -15,14 +15,17 @@ import {
   fazerLogin,
   obterUsuarioSalvo,
   temSessao,
-} from './services/api';
+  removerLivro,
+} from "./services/api";
 
-export type TelaAtiva = 'login' | RotaMenu;
+export type TelaAtiva = "login" | RotaMenu;
 
 export function App() {
-  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(() => obterUsuarioSalvo());
+  const [usuario, setUsuario] = useState<UsuarioPerfil | null>(() =>
+    obterUsuarioSalvo(),
+  );
   const [telaAtual, setTelaAtual] = useState<TelaAtiva>(() =>
-    usuario ? 'home' : 'login',
+    usuario ? "home" : "login",
   );
 
   useEffect(() => {
@@ -33,17 +36,17 @@ export function App() {
       .then((perfil) => {
         if (ativo) {
           setUsuario(perfil);
-          setTelaAtual('home');
+          setTelaAtual("home");
         }
       })
       .catch((error: unknown) => {
         if (!ativo) return;
         if (!temSessao()) {
           setUsuario(null);
-          setTelaAtual('login');
+          setTelaAtual("login");
           return;
         }
-        console.error('Não foi possível atualizar o perfil da sessão:', error);
+        console.error("Não foi possível atualizar o perfil da sessão:", error);
       });
 
     return () => {
@@ -57,10 +60,10 @@ export function App() {
 
   function handleEntrar(dados?: RespostaAutenticacao) {
     if (dados?.usuario) {
-      const nome = dados.usuario.nome?.trim() || 'Usuário';
+      const nome = dados.usuario.nome?.trim() || "Usuário";
       const arrobaGerado =
         dados.usuario.arroba?.trim() ||
-        `@${nome.toLowerCase().replace(/\s+/g, '')}`;
+        `@${nome.toLowerCase().replace(/\s+/g, "")}`;
 
       setUsuario({
         id: dados.usuario.id,
@@ -69,16 +72,16 @@ export function App() {
         fotoUrl: dados.usuario.fotoUrl ?? null,
       });
     }
-    setTelaAtual('home');
+    setTelaAtual("home");
   }
 
   function handleSair() {
     encerrarSessaoApi();
     setUsuario(null);
-    setTelaAtual('login');
+    setTelaAtual("login");
   }
 
-  if (telaAtual === 'login') {
+  if (telaAtual === "login") {
     return (
       <Login
         aoEntrar={handleEntrar}
@@ -92,7 +95,7 @@ export function App() {
     );
   }
 
-  if (telaAtual === 'search') {
+  if (telaAtual === "search") {
     return (
       <Search
         usuario={usuario}
@@ -111,9 +114,9 @@ export function App() {
             const pessoal = pessoais.get(livro.googleBooksId);
             return {
               id: livro.googleBooksId,
-              categoria: livro.categories[0] ?? 'Sem categoria',
+              categoria: livro.categories[0] ?? "Sem categoria",
               titulo: livro.title,
-              autor: livro.authors.join(', ') || 'Autor desconhecido',
+              autor: livro.authors.join(", ") || "Autor desconhecido",
               nota: pessoal?.rating ?? null,
               capaUrl: livro.coverUrl,
               salvo: pessoal?.isFavorite ?? false,
@@ -127,13 +130,13 @@ export function App() {
         aoAlternarJaLiLivro={async (id, novoValor) => {
           await atualizarLivro(String(id), {
             finishedAt: novoValor ? new Date().toISOString() : null,
-          })
+          });
         }}
       />
     );
   }
 
-  if (telaAtual === 'dashboard') {
+  if (telaAtual === "dashboard") {
     return (
       <Dashboard
         usuario={usuario}
@@ -141,7 +144,9 @@ export function App() {
         aoSair={handleSair}
         buscarDadosDashboard={async () => {
           const estante = await buscarMinhaEstante();
-          const lidos = estante.results.filter((livro) => Boolean(livro.finishedAt));
+          const lidos = estante.results.filter((livro) =>
+            Boolean(livro.finishedAt),
+          );
           return {
             usuario: usuario ?? undefined,
             resumo: {
@@ -158,7 +163,7 @@ export function App() {
     );
   }
 
-  if (telaAtual === 'perfil') {
+  if (telaAtual === "perfil") {
     return (
       <Usuario
         usuario={usuario}
@@ -166,7 +171,9 @@ export function App() {
         aoSair={handleSair}
         buscarDadosUsuario={async () => {
           const estante = await buscarMinhaEstante();
-          const lidos = estante.results.filter((livro) => Boolean(livro.finishedAt)).length;
+          const lidos = estante.results.filter((livro) =>
+            Boolean(livro.finishedAt),
+          ).length;
           return {
             usuario: usuario ?? undefined,
             resumo: {
@@ -194,6 +201,7 @@ export function App() {
       usuario={usuario}
       aoNavegar={handleNavegar}
       aoSair={handleSair}
+      aoRemoverLivroEstante={removerLivro}
       buscarDadosHome={async () => {
         const estante = await buscarMinhaEstante();
         const livros = estante.results;
@@ -213,11 +221,14 @@ export function App() {
           },
           estante: livros.map((livro) => ({
             id: livro.id,
-            categoria: livro.book.categories[0] ?? 'Sem categoria',
+            bookId: livro.bookId,
+            categoria: livro.book.categories[0] ?? "Sem categoria",
             titulo: livro.book.title,
-            autor: livro.book.authors.join(', ') || 'Autor desconhecido',
+            autor: livro.book.authors.join(", ") || "Autor desconhecido",
             capaUrl: livro.book.coverUrl,
-            status: livro.finishedAt ? 'lidos' as const : 'queroLer' as const,
+            status: livro.finishedAt
+              ? ("lidos" as const)
+              : ("queroLer" as const),
           })),
         };
       }}

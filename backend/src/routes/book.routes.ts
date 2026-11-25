@@ -6,6 +6,6 @@ const bookRoutes = Router();
 bookRoutes.get('/search', searchBooks);
 bookRoutes.post('/add', addBook);
 bookRoutes.get('/my-books', getBooks);
-bookRoutes.put('/delete', removeBook);
+bookRoutes.delete('/delete', removeBook);
 
 export default bookRoutes;
